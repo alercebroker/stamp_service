@@ -1,7 +1,7 @@
+import io
 import os
-import bson
 import fastavro
-from quart import Quart,request
+from flask import Flask,request,send_file
 
 def oid2dir(oid):
 
@@ -16,22 +16,23 @@ def oid2dir(oid):
 
     return output_path
 
-app = Quart(__name__)
+app = Flask(__name__)
 
 @app.route('/')
-async def index():
+def index():
     return "STAMPS API"
 
-@app.route('/get_stamps',methods=['POST'])
-async def get_stamps():
+@app.route('/get_stamp',methods=['POST'])
+def get_stamp():
 
-    data = await request.data
-    param = bson.loads(data)
+    args =  request.args
 
-    oid    = param['oid']
-    candid = param['candid']
+    oid        = args.get('oid')
+    candid     = args.get('candid')
+    stamp_type = args.get('type')
 
     input_directory = oid2dir(oid)
+
     file_name = '{}.avro'.format(candid)
     input_path = os.path.join(input_directory,file_name)
 
@@ -39,34 +40,58 @@ async def get_stamps():
     with open(input_path,'rb') as f:
         data = fastavro.reader(f).next()
 
-    stamps = {
-            'cutoutScience' : data['cutoutScience'], 
-            'cutoutTemplate' : data['cutoutTemplate'], 
-            'cutoutDifference' : data['cutoutDifference']
-    }
+    stamp = None
+    if stamp_type == 'science':
+        stamp = data['cutoutScience']['stampData']
+    elif stamp_type == 'template':
+        stamp = data['cutoutTemplate']['stampData']
+    elif stamp_type == 'difference':
+        stamp = data['cutoutDifference']['stampData']
 
-    return bson.dumps(stamps)
+    stamp_file = io.BytesIO(stamp)
 
-@app.route('/get_avro',methods=['POST'])
-async def get_avro():
-
-    return "AVRO SAVED"
+    return send_file(stamp_file,mimetype='application/fits+gzip')
 
 @app.route('/put_avro',methods=['POST'])
-async def put_avro():
+def put_avro():
 
-    data = await request.data
-    param = bson.loads(data)
+    args = request.args
 
-    oid    = param['oid']
-    candid = param['candid']
-    avro   = param['avro']
+    oid        = args.get('oid')
+    candid     = args.get('candid')
 
     output_directory = oid2dir(oid)
-    file_name = '{}.avro'.format(candid)
-    output_path = os.path.join(input_directory,file_name)
+    if not os.path.exists(output_directory):
+        os.makedirs(output_directory)
 
-    with open(output_path,'wb') as f:
-        f.write(avro)
+    file_name = '{}.avro'.format(candid)
+    output_path = os.path.join(output_directory,file_name)
+
+    print(output_path)
+
+    f = request.files['avro']
+
+    f.save(output_path)
 
     return "AVRO SAVED"
+
+@app.route('/get_avro',methods=['POST'])
+def get_avro():
+
+    args =  request.args
+
+    oid        = args.get('oid')
+    candid     = args.get('candid')
+
+    input_directory = oid2dir(oid)
+
+    file_name = '{}.avro'.format(candid)
+    input_path = os.path.join(input_directory,file_name)
+
+    data = None
+    with open(input_path,'rb') as f:
+        data = f.read()
+
+    avro_file = io.BytesIO(data)
+
+    return send_file(avro_file,mimetype='application/avro+binary')
