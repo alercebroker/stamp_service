@@ -3,4 +3,5 @@ ADD . .
 RUN pip install -r requirements.txt
 RUN pip install flask gunicorn
 EXPOSE 8087
-CMD ["gunicorn", "-b", "0.0.0.0:8087", "simple_server"]
+ENV PYTHONHASHSEED=0
+CMD ["gunicorn", "-b", "0.0.0.0:8087", "-w", "4", "simple_server"]

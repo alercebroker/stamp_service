@@ -16,13 +16,13 @@ def oid2dir(oid):
 
     return output_path
 
-app = Flask(__name__)
+application = Flask(__name__)
 
-@app.route('/')
+@application.route('/')
 def index():
     return "STAMPS API"
 
-@app.route('/get_stamp',methods=['POST'])
+@application.route('/get_stamp',methods=['POST'])
 def get_stamp():
 
     args =  request.args
@@ -52,7 +52,7 @@ def get_stamp():
 
     return send_file(stamp_file,mimetype='application/fits+gzip')
 
-@app.route('/put_avro',methods=['POST'])
+@application.route('/put_avro',methods=['POST'])
 def put_avro():
 
     args = request.args
@@ -75,7 +75,7 @@ def put_avro():
 
     return "AVRO SAVED"
 
-@app.route('/get_avro',methods=['POST'])
+@application.route('/get_avro',methods=['POST'])
 def get_avro():
 
     args =  request.args
