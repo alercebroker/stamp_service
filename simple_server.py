@@ -2,6 +2,8 @@ import io
 import os
 import fastavro
 from flask import Flask,request,send_file
+import flask_cors import CORS
+import fits2png 
 
 def oid2dir(oid):
 
@@ -17,6 +19,7 @@ def oid2dir(oid):
     return output_path
 
 application = Flask(__name__)
+CORS(application)
 
 @application.route('/')
 def index():
@@ -25,11 +28,12 @@ def index():
 @application.route('/get_stamp',methods=['POST'])
 def get_stamp():
 
+    #arguments
     args =  request.args
-
-    oid        = args.get('oid')
-    candid     = args.get('candid')
-    stamp_type = args.get('type')
+    oid          = args.get('oid')
+    candid       = args.get('candid')
+    stamp_type   = args.get('type')
+    stamp_format = args.get('format')
 
     input_directory = oid2dir(oid)
 
@@ -40,6 +44,7 @@ def get_stamp():
     with open(input_path,'rb') as f:
         data = fastavro.reader(f).next()
 
+    #type
     stamp = None
     if stamp_type == 'science':
         stamp = data['cutoutScience']['stampData']
@@ -48,9 +53,14 @@ def get_stamp():
     elif stamp_type == 'difference':
         stamp = data['cutoutDifference']['stampData']
 
+    #format
     stamp_file = io.BytesIO(stamp)
+    mimetype = 'application/fits+gzip'
+    if stamp_format == 'png':
+	stamp_file = fits2png.transform(stamp_file)
+	mimetype = 'image/png'
 
-    return send_file(stamp_file,mimetype='application/fits+gzip')
+    return send_file(stamp_file,mimetype=mimetype)
 
 @application.route('/put_avro',methods=['POST'])
 def put_avro():
