@@ -55,14 +55,15 @@ def get_stamp():
         stamp = data['cutoutDifference']['stampData']
 
     #format
-    compressed_fits_file = io.BytesIO(stamp)
-    stamp_file = compressed_fits_file
-    mimetype = 'application/fits+gzip'
+    compressed_fits_bytes = stamp
+    stamp_file = None
+    if stamp_format == 'fits':
+        stamp_file = io.BytesIO(compressed_fits_bytes)
+        mimetype = 'application/fits+gzip'
     if stamp_format == 'png':
-        print("A={}".format( len(stamp_file.read() ) ) )
-        stamp_file = fits2png.transform(compressed_fits_file)
+        image_bytes = fits2png.transform(compressed_fits_bytes)
+        stamp_file = io.BytesIO(image_bytes)
         mimetype = 'image/png'
-        print("B={}".format( len(stamp_file.read() ) ) )
 
     return send_file(stamp_file,mimetype=mimetype)
 

@@ -5,7 +5,7 @@ import gzip
 import img_scale
 from PIL import Image
 
-def transform(compressed_fits_file):
+def transform(compressed_fits_bytes):
 
 	# Parameters
 	sig_fract = 5.0
@@ -16,7 +16,7 @@ def transform(compressed_fits_file):
 	non_linear_fact = 0.005
 
 	# Read red image
-	bytes_fits = gzip.open(compressed_fits_file,'rb').read()
+	bytes_fits = gzip.open( io.BytesIO( compressed_fits_bytes) ,'rb').read()
 	fits_file = io.BytesIO(bytes_fits)
 	hdul = fits.open(fits_file)
 	img_data = hdul[0].data
@@ -45,4 +45,7 @@ def transform(compressed_fits_file):
 	binary_file = io.BytesIO()
 	use_image.save(binary_file,format='png')
 
-	return binary_file
+	binary_file.seek(0)
+	image_bytes = binary_file.read()
+
+	return image_bytes
