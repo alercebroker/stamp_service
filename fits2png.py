@@ -32,11 +32,10 @@ def transform(compressed_fits_file):
 	# Apply scaling relations
 	data = factor * img_scale.histeq(img_data, scale_min = min_val )
 
-	# GRAY image with SciPy
-
-        data /=  data.max(axis=0)
-        data *= (255.0/data.max())
-        data = data.astype(numpy.uint8)
+	#GRAY image with SciPy
+	data /=  data.max(axis=0)
+	data *= (255.0/data.max())
+	data = data.astype(numpy.uint8)
 
 	data_array = numpy.array( numpy.ravel(data) )
 	data_array.astype(numpy.int)
