@@ -2,7 +2,7 @@ import io
 import os
 import fastavro
 from flask import Flask,request,send_file
-import flask_cors import CORS
+from flask_cors import CORS
 import fits2png 
 
 def oid2dir(oid):
@@ -36,6 +36,7 @@ def get_stamp():
     stamp_format = args.get('format')
 
     input_directory = oid2dir(oid)
+    print(input_directory)
 
     file_name = '{}.avro'.format(candid)
     input_path = os.path.join(input_directory,file_name)
@@ -54,11 +55,14 @@ def get_stamp():
         stamp = data['cutoutDifference']['stampData']
 
     #format
-    stamp_file = io.BytesIO(stamp)
+    compressed_fits_file = io.BytesIO(stamp)
+    stamp_file = compressed_fits_file
     mimetype = 'application/fits+gzip'
     if stamp_format == 'png':
-	stamp_file = fits2png.transform(stamp_file)
-	mimetype = 'image/png'
+        print("A={}".format( len(stamp_file.read() ) ) )
+        stamp_file = fits2png.transform(compressed_fits_file)
+        mimetype = 'image/png'
+        print("B={}".format( len(stamp_file.read() ) ) )
 
     return send_file(stamp_file,mimetype=mimetype)
 

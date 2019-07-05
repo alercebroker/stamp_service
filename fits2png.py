@@ -16,7 +16,7 @@ def transform(compressed_fits_file):
 	non_linear_fact = 0.005
 
 	# Read red image
-	bytes_fits = gzip.open(compressed_fits_file).read()
+	bytes_fits = gzip.open(compressed_fits_file,'rb').read()
 	fits_file = io.BytesIO(bytes_fits)
 	hdul = fits.open(fits_file)
 	img_data = hdul[0].data
