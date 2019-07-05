@@ -2,7 +2,6 @@ import io
 import numpy
 from astropy.io import fits
 import gzip
-import scipy.misc
 import img_scale
 from PIL import Image
 
@@ -34,7 +33,12 @@ def transform(compressed_fits_file):
 	data = factor * img_scale.histeq(img_data, scale_min = min_val )
 
 	# GRAY image with SciPy
-	data_array = numpy.array( numpy.ravel(scipy.misc.bytescale(data)) )
+
+        data /=  data.max(axis=0)
+        data *= (255.0/data.max())
+        data = data.astype(numpy.uint8)
+
+	data_array = numpy.array( numpy.ravel(data) )
 	data_array.astype(numpy.int)
 	use_image = Image.new('L', size=(height, width))
 	use_image.putdata(data_array)
