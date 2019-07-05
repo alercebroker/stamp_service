@@ -1,3 +1,4 @@
+import io
 import numpy
 from astropy.io import fits
 import gzip
@@ -5,7 +6,7 @@ import scipy.misc
 import img_scale
 from PIL import Image
 
-def transform(compreseed_fits_file):
+def transform(compressed_fits_file):
 
 	# Parameters
 	sig_fract = 5.0
@@ -16,7 +17,7 @@ def transform(compreseed_fits_file):
 	non_linear_fact = 0.005
 
 	# Read red image
-	bytes_fits = gzip.open(compressed_fits_file)
+	bytes_fits = gzip.open(compressed_fits_file).read()
 	fits_file = io.BytesIO(bytes_fits)
 	hdul = fits.open(fits_file)
 	img_data = hdul[0].data
