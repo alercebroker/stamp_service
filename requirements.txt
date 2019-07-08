@@ -63,3 +63,4 @@ astropy
 pillow
 scipy
 numpy
+matplotlib

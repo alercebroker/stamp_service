@@ -3,7 +3,7 @@ import os
 import fastavro
 from flask import Flask,request,send_file
 from flask_cors import CORS
-import fits2png 
+import fits2png_simple as fits2png
 
 def oid2dir(oid):
 
@@ -25,7 +25,7 @@ CORS(application)
 def index():
     return "STAMPS API"
 
-@application.route('/get_stamp',methods=['POST'])
+@application.route('/get_stamp',methods=['GET'])
 def get_stamp():
 
     #arguments
@@ -67,7 +67,7 @@ def get_stamp():
 
     return send_file(stamp_file,mimetype=mimetype)
 
-@application.route('/put_avro',methods=['POST'])
+@application.route('/put_avro',methods=['GET'])
 def put_avro():
 
     args = request.args
@@ -90,7 +90,7 @@ def put_avro():
 
     return "AVRO SAVED"
 
-@application.route('/get_avro',methods=['POST'])
+@application.route('/get_avro',methods=['GET'])
 def get_avro():
 
     args =  request.args
