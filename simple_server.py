@@ -1,7 +1,7 @@
 import io
 import os
 import fastavro
-from flask import Flask,request,send_file
+from flask import Flask,request,send_file,Response
 from flask_cors import CORS
 import fits2png_simple as fits2png
 
@@ -30,21 +30,28 @@ def get_stamp():
 
     #arguments
     args =  request.args
-    oid          = args.get('oid')
+    if "oid" not in args or "candid" not in args or "type" not in args or "format" not in args:
+        return Response("{'status':'ERROR', 'content': 'Query Malformed'}",400)
+
+    oid = args.get('oid')
     candid       = args.get('candid')
     stamp_type   = args.get('type')
     stamp_format = args.get('format')
 
+    if stamp_format not in ["fits","png"]:
+        return Response("{'status':'ERROR', 'content': 'Format not supported, only png or compressed fits (.tar.gz)'}",400)
+
     input_directory = oid2dir(oid)
-    print(input_directory)
 
     file_name = '{}.avro'.format(candid)
     input_path = os.path.join(input_directory,file_name)
 
     data = None
-    with open(input_path,'rb') as f:
-        data = fastavro.reader(f).next()
-
+    try:
+        with open(input_path,'rb') as f:
+            data = fastavro.reader(f).next()
+    except FileNotFoundError:
+        return Response("{'status':'ERROR', 'content': 'File not found'}",400)
     #type
     stamp = None
     if stamp_type == 'science':
@@ -67,7 +74,7 @@ def get_stamp():
 
     return send_file(stamp_file,mimetype=mimetype)
 
-@application.route('/put_avro',methods=['GET'])
+@application.route('/put_avro',methods=['POST'])
 def put_avro():
 
     args = request.args

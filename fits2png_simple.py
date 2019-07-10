@@ -8,10 +8,12 @@ def transform(compressed_fits_file):
     gf = gzip.open(f)
     hdu = fio.open(gf)[0]
     plt.figure()
-    plt.matshow(-hdu.data,cmap='Greys',interpolation="bilinear")
+    plt.matshow(-hdu.data,cmap='Greys',interpolation="nearest")
     plt.axis("off")
     buf = io.BytesIO()
     plt.savefig(buf,format="png", bbox_inches='tight', transparent=True)
     buf.seek(0)
     im = buf.read()
+    plt.cla()
+    plt.clf()
     return im
