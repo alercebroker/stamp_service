@@ -4,6 +4,31 @@ import fastavro
 from flask import Flask,request,send_file,Response
 from flask_cors import CORS
 import fits2png_simple as fits2png
+import requests
+import wget
+
+
+application = Flask(__name__)
+CORS(application)
+
+def _put_from_mars(oid,candid):
+    application.logger.debug("Downloading {}/{}.avro".format(oid,candid))
+    url_path = "https://mars.lco.global/?candid={}&format=json".format(candid)
+
+    resp = requests.get(url_path)
+    resp_json = resp.json()
+    download_path = resp_json["results"][0]["avro"]
+
+    output_directory = oid2dir(oid)
+    if not os.path.exists(output_directory):
+        os.makedirs(output_directory)
+
+    file_name = '{}.avro'.format(candid)
+    output_path = os.path.join(output_directory,file_name)
+    wget.download(download_path,output_path)
+    application.logger.debug("Downloaded")
+
+    return
 
 def oid2dir(oid):
 
@@ -17,9 +42,6 @@ def oid2dir(oid):
     output_path = os.path.join( output_directory, output_path )
 
     return output_path
-
-application = Flask(__name__)
-CORS(application)
 
 @application.route('/')
 def index():
@@ -51,7 +73,10 @@ def get_stamp():
         with open(input_path,'rb') as f:
             data = fastavro.reader(f).next()
     except FileNotFoundError:
-        return Response("{'status':'ERROR', 'content': 'File not found'}",400)
+        _put_from_mars(oid,candid)
+        with open(input_path,'rb') as f:
+            data = fastavro.reader(f).next()
+        # return Response("{'status':'ERROR', 'content': 'File not found'}",400)
     #type
     stamp = None
     if stamp_type == 'science':
@@ -111,9 +136,17 @@ def get_avro():
     input_path = os.path.join(input_directory,file_name)
 
     data = None
-    with open(input_path,'rb') as f:
-        data = f.read()
+    try:
+        with open(input_path,'rb') as f:
+            data = f.read()
+    except FileNotFoundError:
+        _put_from_mars(oid,candid)
+        with open(input_path,'rb') as f:
+            data = f.read()
 
     avro_file = io.BytesIO(data)
 
     return send_file(avro_file,mimetype='application/avro+binary')
+
+if __name__=="__main__":
+    application.run(debug=True)
