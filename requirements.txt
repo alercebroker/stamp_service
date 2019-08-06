@@ -64,5 +64,4 @@ pillow
 scipy
 numpy
 matplotlib
-requests
 wget
