@@ -86,6 +86,7 @@ def get_stamp():
     elif stamp_type == 'difference':
         stamp = data['cutoutDifference']['stampData']
 
+    window = 2
     #format
     compressed_fits_bytes = stamp
     stamp_file = None
@@ -93,7 +94,8 @@ def get_stamp():
         stamp_file = io.BytesIO(compressed_fits_bytes)
         mimetype = 'application/fits+gzip'
     if stamp_format == 'png':
-        image_bytes = fits2png.transform(compressed_fits_bytes)
+        max_val = fits2png.get_max(data['cutoutScience']['stampData'],window)
+        image_bytes = fits2png.transform(compressed_fits_bytes,max_val)
         stamp_file = io.BytesIO(image_bytes)
         mimetype = 'image/png'
 
