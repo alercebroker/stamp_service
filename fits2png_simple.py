@@ -16,15 +16,19 @@ def get_max(compressed_fits_file, window):
     center = data[np.arange(x-n,x+n),:]
     center = center[:,np.arange(y-n,y+n)]
     max_val = np.max(center)
-    return max_val
+    min_val = np.min(data) + 0.2*np.median(np.abs(data - np.median(data)))
 
-def transform(compressed_fits_file, max_val):
+    return max_val,min_val
+
+def transform(compressed_fits_file, file_type, max_val,min_val):
     f = io.BytesIO(compressed_fits_file)
     gf = gzip.open(f)
     hdu = fio.open(gf)[0]
 
     data = hdu.data
-    data[data > max_val] = max_val
+    if file_type != "difference":
+        data[data > max_val] = max_val
+        data[data < min_val] = min_val
 
     plt.figure()
     plt.matshow(data,cmap='Greys_r',interpolation="nearest")

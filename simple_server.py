@@ -94,8 +94,8 @@ def get_stamp():
         stamp_file = io.BytesIO(compressed_fits_bytes)
         mimetype = 'application/fits+gzip'
     if stamp_format == 'png':
-        max_val = fits2png.get_max(data['cutoutScience']['stampData'],window)
-        image_bytes = fits2png.transform(compressed_fits_bytes,max_val)
+        max_val,min_val = fits2png.get_max(data['cutoutScience']['stampData'],window)
+        image_bytes = fits2png.transform(compressed_fits_bytes,stamp_type,max_val,min_val)
         stamp_file = io.BytesIO(image_bytes)
         mimetype = 'image/png'
 
