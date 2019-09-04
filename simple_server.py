@@ -1,7 +1,7 @@
 import io
 import os
 import fastavro
-from flask import Flask,request,send_file,Response
+from flask import Flask,request,send_file,Response,jsonify
 from flask_cors import CORS
 import fits2png_simple as fits2png
 import requests
@@ -17,18 +17,21 @@ def _put_from_mars(oid,candid):
 
     resp = requests.get(url_path)
     resp_json = resp.json()
-    download_path = resp_json["results"][0]["avro"]
+    application.logger.warning(resp_json)
+    try:
+        download_path = resp_json["results"][0]["avro"]
 
-    output_directory = oid2dir(oid)
-    if not os.path.exists(output_directory):
-        os.makedirs(output_directory)
+        output_directory = oid2dir(oid)
+        if not os.path.exists(output_directory):
+            os.makedirs(output_directory)
 
-    file_name = '{}.avro'.format(candid)
-    output_path = os.path.join(output_directory,file_name)
-    wget.download(download_path,output_path)
-    application.logger.debug("Downloaded")
-
-    return
+        file_name = '{}.avro'.format(candid)
+        output_path = os.path.join(output_directory,file_name)
+        wget.download(download_path,output_path)
+        application.logger.debug("Downloaded")
+    except:
+        return False
+    return True
 
 def oid2dir(oid):
 
@@ -73,7 +76,12 @@ def get_stamp():
         with open(input_path,'rb') as f:
             data = fastavro.reader(f).next()
     except FileNotFoundError:
-        _put_from_mars(oid,candid)
+        success = _put_from_mars(oid,candid)
+
+        if not success:
+            return Response("{'status':'ERROR', 'content': 'File not found'}",500)
+
+
         with open(input_path,'rb') as f:
             data = fastavro.reader(f).next()
         # return Response("{'status':'ERROR', 'content': 'File not found'}",400)
@@ -93,13 +101,16 @@ def get_stamp():
     if stamp_format == 'fits':
         stamp_file = io.BytesIO(compressed_fits_bytes)
         mimetype = 'application/fits+gzip'
+        fname=f"{oid}_{candid}.fits.gz"
     if stamp_format == 'png':
         max_val,min_val = fits2png.get_max(data['cutoutScience']['stampData'],window)
         image_bytes = fits2png.transform(compressed_fits_bytes,stamp_type,max_val,min_val)
         stamp_file = io.BytesIO(image_bytes)
         mimetype = 'image/png'
+        fname=f"{oid}_{candid}.png"
 
-    return send_file(stamp_file,mimetype=mimetype)
+
+    return send_file(stamp_file,mimetype=mimetype,attachment_filename=fname,as_attachment=True)
 
 @application.route('/put_avro',methods=['POST'])
 def put_avro():
@@ -147,8 +158,43 @@ def get_avro():
             data = f.read()
 
     avro_file = io.BytesIO(data)
+    fname = f"{oid}_{candid}.avro"
+    return send_file(avro_file,mimetype='application/avro+binary',attachment_filename=fname,as_attachment=True)
 
-    return send_file(avro_file,mimetype='application/avro+binary')
+
+
+@application.route('/get_avro_info',methods=['GET'])
+def get_avro_info():
+
+    args =  request.args
+
+    oid        = args.get('oid')
+    candid     = args.get('candid')
+
+    input_directory = oid2dir(oid)
+
+    file_name = '{}.avro'.format(candid)
+    input_path = os.path.join(input_directory,file_name)
+
+    data = None
+    try:
+        with open(input_path,'rb') as f:
+            data = f.read()
+    except FileNotFoundError:
+        _put_from_mars(oid,candid)
+        with open(input_path,'rb') as f:
+            data = f.read()
+
+    avro_file = io.BytesIO(data)
+    reader = fastavro.reader(avro_file)
+    data = reader.next()
+    del data["cutoutScience"]
+    del data["cutoutTemplate"]
+    del data["cutoutDifference"]
+
+    return jsonify(data)
+
+
 
 if __name__=="__main__":
     application.run(debug=True)
