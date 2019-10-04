@@ -39,4 +39,5 @@ def transform(compressed_fits_file, file_type, max_val,min_val):
     im = buf.read()
     plt.cla()
     plt.clf()
+    plt.close()
     return im

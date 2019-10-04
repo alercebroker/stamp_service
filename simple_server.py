@@ -101,13 +101,13 @@ def get_stamp():
     if stamp_format == 'fits':
         stamp_file = io.BytesIO(compressed_fits_bytes)
         mimetype = 'application/fits+gzip'
-        fname=f"{oid}_{candid}.fits.gz"
+        fname=f"{oid}_{candid}_{stamp_type}.fits.gz"
     if stamp_format == 'png':
         max_val,min_val = fits2png.get_max(data['cutoutScience']['stampData'],window)
         image_bytes = fits2png.transform(compressed_fits_bytes,stamp_type,max_val,min_val)
         stamp_file = io.BytesIO(image_bytes)
         mimetype = 'image/png'
-        fname=f"{oid}_{candid}.png"
+        fname=f"{oid}_{candid}_{stamp_type}.png"
 
 
     return send_file(stamp_file,mimetype=mimetype,attachment_filename=fname,as_attachment=True)
@@ -124,8 +124,12 @@ def put_avro():
     if not os.path.exists(output_directory):
         os.makedirs(output_directory)
 
+
     file_name = '{}.avro'.format(candid)
     output_path = os.path.join(output_directory,file_name)
+
+    if os.path.exists(output_path):
+        return  "AVRO ALREADY EXISTS"
 
     print(output_path)
 
