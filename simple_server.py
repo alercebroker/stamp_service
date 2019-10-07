@@ -122,7 +122,7 @@ def put_avro():
 
     output_directory = oid2dir(oid)
     if not os.path.exists(output_directory):
-        os.makedirs(output_directory)
+        os.makedirs(output_directory, exist_ok=True)
 
 
     file_name = '{}.avro'.format(candid)
