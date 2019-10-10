@@ -17,7 +17,7 @@ def _put_from_mars(oid,candid):
 
     resp = requests.get(url_path)
     resp_json = resp.json()
-    application.logger.warning(resp_json)
+    #application.logger.warning(resp_json)
     try:
         download_path = resp_json["results"][0]["avro"]
 
@@ -27,6 +27,7 @@ def _put_from_mars(oid,candid):
 
         file_name = '{}.avro'.format(candid)
         output_path = os.path.join(output_directory,file_name)
+        application.logger.warning("Saving on {} from MARS oid={} candid={}".format(output_path,oid,candid))
         wget.download(download_path,output_path)
         application.logger.debug("Downloaded")
     except:
@@ -62,6 +63,9 @@ def get_stamp():
     candid       = args.get('candid')
     stamp_type   = args.get('type')
     stamp_format = args.get('format')
+
+    if candid is None or oid is None or candid=="" or oid=="":
+        return Response("{'status':'ERROR', 'content': 'Query Malformed'}",400)
 
     if stamp_format not in ["fits","png"]:
         return Response("{'status':'ERROR', 'content': 'Format not supported, only png or compressed fits (.tar.gz)'}",400)
@@ -131,7 +135,7 @@ def put_avro():
     if os.path.exists(output_path):
         return  "AVRO ALREADY EXISTS"
 
-    print(output_path)
+    application.logger.warning("Saving on {} from Stream oid={} candid={}".format(output_path,oid,candid))
 
     f = request.files['avro']
 
