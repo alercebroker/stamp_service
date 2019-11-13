@@ -6,7 +6,7 @@ class TestStampService(unittest.TestCase):
 
     def test_get_stamp(self):
         oid =  "ZTF18aaccpyz"
-        candid = "516167660315010003"
+        candid = 516167660315010003
         format = "png"
         type = "science"
 
@@ -30,7 +30,7 @@ class TestStampService(unittest.TestCase):
 
     def test_get_avro_info(self):
         oid =  "ZTF18aaccpyz"
-        candid = "516167660315010003"
+        candid = 516167660315010003
 
         params = {
             "oid":oid,
@@ -42,7 +42,7 @@ class TestStampService(unittest.TestCase):
 
     def test_wrong_oid(self):
         oid =  "TESTO"
-        candid = "516167660315010003"
+        candid = 516167660315010003
         format = "png"
         type = "science"
 

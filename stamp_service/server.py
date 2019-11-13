@@ -67,7 +67,7 @@ def get_stamp():
         return Response("{'status':'ERROR', 'content': 'Query Malformed'}",400)
 
     oid = args.get('oid')
-    candid       = args.get('candid')
+    candid       = int(args.get('candid'))
     stamp_type   = args.get('type')
     stamp_format = args.get('format')
 
@@ -129,7 +129,7 @@ def put_avro():
     args = request.args
 
     oid        = args.get('oid')
-    candid     = args.get('candid')
+    candid     = int(args.get('candid'))
 
     output_directory = oid2dir(oid)
     if not os.path.exists(output_directory):
@@ -156,7 +156,7 @@ def get_avro():
     args =  request.args
 
     oid        = args.get('oid')
-    candid     = args.get('candid')
+    candid     = int(args.get('candid'))
 
     input_directory = oid2dir(oid)
 
@@ -184,7 +184,7 @@ def get_avro_info():
     args =  request.args
 
     oid        = args.get('oid')
-    candid     = args.get('candid')
+    candid     = int(args.get('candid'))
 
     input_directory = oid2dir(oid)
 

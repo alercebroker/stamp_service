@@ -13,5 +13,7 @@ ENV APP_BIND="0.0.0.0"
 ENV APP_PORT="8087"
 ENV APP_WORKERS=6
 
+RUN mkdir /mnt/stamps
+
 WORKDIR /app/scripts
 CMD ["/bin/bash","entrypoint.sh"]

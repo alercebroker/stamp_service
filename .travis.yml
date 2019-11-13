@@ -1,0 +1,15 @@
+language: python
+
+services:
+  - docker
+
+before_install:
+  - docker build -t stamp_service .
+  - docker run -d --name stamp_service -p 8087:8087 stamp_service
+  - pip install requests==2.22.0
+
+script:
+  - cd tests && python app.py
+
+after_failure:
+  - docker logs stamp_service
