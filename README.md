@@ -1,5 +1,5 @@
 # [ALeRCE](http://alerce.science) AVRO Service
-[![Documentation Status](https://readthedocs.org/projects/alerceapi/badge/?version=latest)](https://alerceapi.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/alerceapi/badge/?version=latest)](https://alerceapi.readthedocs.io/en/latest/avro.html?badge=latest)
 
 ALeRCE Stamp Service stores and gives access to AVRO files, Stamps and Metadata for ZTF and other surveys.
 
@@ -7,7 +7,7 @@ ALeRCE Stamp Service stores and gives access to AVRO files, Stamps and Metadata 
 ## Documentation
 The current documentation can be found [here](https://alerceapi.readthedocs.io/en/latest/avro.html).
 
-## How the data is stored?
+## How the data is stored
 
 The stamp service uses a 8 folder configuration to store the data.
 

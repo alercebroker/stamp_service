@@ -19,6 +19,14 @@ def _put_from_mars(oid,candid):
     #application.logger.warning(resp_json)
     try:
         download_path = resp_json["results"][0]["avro"]
+        mars_oid = resp_json["results"][0]["objectId"]
+        mars_candid = resp_json["results"][0]["candid"]
+
+        if mars_oid != oid:
+            return False
+
+        if mars_candid != candid:
+            return False
 
         output_directory = oid2dir(oid)
         if not os.path.exists(output_directory):
