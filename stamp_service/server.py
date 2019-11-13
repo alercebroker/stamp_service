@@ -3,7 +3,7 @@ import os
 import fastavro
 from flask import Flask,request,send_file,Response,jsonify
 from flask_cors import CORS
-import fits2png_simple as fits2png
+from . import fits2png
 import requests
 import wget
 
