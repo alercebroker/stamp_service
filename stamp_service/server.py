@@ -7,7 +7,6 @@ from . import fits2png
 import requests
 import wget
 
-
 application = Flask(__name__)
 CORS(application)
 
@@ -38,7 +37,7 @@ def oid2dir(oid):
 
     disks = 8
     disk = hash(oid) % disks
-    output_directory = '/mnt/stamps/{}'.format(disk)
+    output_directory = '{}/{}'.format(os.environ["AVRO_ROOT"],disk)
     output_path = oid[:5]
     for c in oid[5:]:
         output_path = os.path.join(output_path, c)

@@ -1,4 +1,5 @@
 # [ALeRCE](http://alerce.science) AVRO Service
+[![Documentation Status](https://readthedocs.org/projects/alerceapi/badge/?version=latest)](https://alerceapi.readthedocs.io/en/latest/?badge=latest)
 
 ALeRCE Stamp Service stores and gives access to AVRO files, Stamps and Metadata for ZTF and other surveys.
 
@@ -23,6 +24,25 @@ To get a better image we select a window around the central object and get the m
 
 ## Deploying Stamp Service
 
+
+The stamp service is deployed as a docker container, to build the image run:
 ```
   docker build -t stamp_service .
+```
+
+Then the container can be created with
+```
+  docker run --name stamp_service -p 8087:8087 \
+             -v <disks_path>:/mnt/stamps
+              stamp_service
+```
+
+Some other configurations for the container are:
+
+```
+PYTHONHASHSEED    Seed for Hash calculation (default 0)
+AVRO_ROOT         Location of disks         (default /mnt/stamps)
+APP_BIND          Gunicorn bind address     (default 0.0.0.0)
+APP_PORT          Gunicorn port             (default 8087)
+APP_WORKERS       Gunicorn num of workers   (default 6)
 ```

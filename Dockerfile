@@ -8,6 +8,10 @@ RUN pip install -r requirements.txt && pip install flask gunicorn
 COPY . /app
 EXPOSE 8087
 ENV PYTHONHASHSEED=0
+ENV AVRO_ROOT=/mnt/stamps
+ENV APP_BIND="0.0.0.0"
+ENV APP_PORT="8087"
+ENV APP_WORKERS=6
 
 WORKDIR /app/scripts
-CMD ["gunicorn", "-b", "0.0.0.0:8087", "-w", "6", "wsgi"]
+CMD ["/bin/bash","entrypoint.sh"]
