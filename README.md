@@ -19,6 +19,8 @@ Each time a new avro is uploaded a hash function is calculated over the object i
 
 Using the straightforward approach to generate an image from the stamp can gives an low contrast image.
 
+![transform process](doc/transform.png)
+
 To get a better image we select a window around the central object and get the max value of that window, this gives a better contrast but with some oversaturated stamps.
 
 
