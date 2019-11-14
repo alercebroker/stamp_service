@@ -3,10 +3,9 @@ import os
 import fastavro
 from flask import Flask,request,send_file,Response,jsonify
 from flask_cors import CORS
-import fits2png_simple as fits2png
+from . import fits2png
 import requests
 import wget
-
 
 application = Flask(__name__)
 CORS(application)
@@ -20,6 +19,14 @@ def _put_from_mars(oid,candid):
     #application.logger.warning(resp_json)
     try:
         download_path = resp_json["results"][0]["avro"]
+        mars_oid = resp_json["results"][0]["objectId"]
+        mars_candid = resp_json["results"][0]["candid"]
+
+        if mars_oid != oid:
+            return False
+
+        if mars_candid != candid:
+            return False
 
         output_directory = oid2dir(oid)
         if not os.path.exists(output_directory):
@@ -38,7 +45,7 @@ def oid2dir(oid):
 
     disks = 8
     disk = hash(oid) % disks
-    output_directory = '/mnt/stamps/{}'.format(disk)
+    output_directory = '{}/{}'.format(os.environ["AVRO_ROOT"],disk)
     output_path = oid[:5]
     for c in oid[5:]:
         output_path = os.path.join(output_path, c)
@@ -60,7 +67,7 @@ def get_stamp():
         return Response("{'status':'ERROR', 'content': 'Query Malformed'}",400)
 
     oid = args.get('oid')
-    candid       = args.get('candid')
+    candid       = int(args.get('candid'))
     stamp_type   = args.get('type')
     stamp_format = args.get('format')
 
@@ -122,7 +129,7 @@ def put_avro():
     args = request.args
 
     oid        = args.get('oid')
-    candid     = args.get('candid')
+    candid     = int(args.get('candid'))
 
     output_directory = oid2dir(oid)
     if not os.path.exists(output_directory):
@@ -149,7 +156,7 @@ def get_avro():
     args =  request.args
 
     oid        = args.get('oid')
-    candid     = args.get('candid')
+    candid     = int(args.get('candid'))
 
     input_directory = oid2dir(oid)
 
@@ -177,7 +184,7 @@ def get_avro_info():
     args =  request.args
 
     oid        = args.get('oid')
-    candid     = args.get('candid')
+    candid     = int(args.get('candid'))
 
     input_directory = oid2dir(oid)
 
