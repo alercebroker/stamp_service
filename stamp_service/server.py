@@ -51,6 +51,8 @@ def oid2dir(oid):
     disks = 8
     disk = hash(oid) % disks
     output_directory = '{}/{}'.format(os.environ["AVRO_ROOT"],disk)
+    if os.getenv("TEST_MODE", False):
+        output_directory = os.environ["AVRO_ROOT"]
     output_path = oid[:5]
     for c in oid[5:]:
         output_path = os.path.join(output_path, c)
