@@ -1,15 +1,48 @@
 import fastavro
 import requests
+from . import utils
+import io
+import boto3
+from botocore.exceptions import ClientError
 
 
 class S3Searcher:
+    def __init__(self, bucket_name):
+        self.client = boto3.client("s3")
+        self.bucket_name = bucket_name
+
     def get_file_from_s3(self, oid, candid):
-        pass
+        reverse_candid = utils.reverse_candid(candid)
+        file_name = f"{reverse_candid}.avro"
+        avro_file = io.BytesIO()
+        try:
+            self.client.download_fileobj(self.bucket_name, file_name, avro_file)
+            return avro_file
+        except ClientError as e:
+            if e.response["Error"]["Code"] == "404":
+                raise FileNotFoundError
+            else:
+                raise Exception(e)
+
+    def upload_file(self, file_name, object_name=None):
+        """Upload a file to an S3 bucket
+
+        :param file_name: File to upload
+        :param bucket: Bucket to upload to
+        :param object_name: S3 object name. If not specified then file_name is used
+        :return: True if file was uploaded, else False
+        """
+        # If S3 object_name was not specified, use file_name
+        if object_name is None:
+            object_name = file_name
+        # Upload the file
+        return self.client.upload_file(file_name, self.bucket_name, object_name)
 
 
 class MARSSearcher:
     def __init__(self, mars_url):
         self.mars_url = mars_url
+        # https://mars.lco.global/?candid={}&format=json
 
     def get_file_from_mars(self, oid, candid):
         payload = {"candid": candid, "format": "json"}
