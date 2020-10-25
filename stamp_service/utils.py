@@ -16,6 +16,7 @@ def format_stamp(stamp, format, oid, candid, type):
         stamp_file = io.BytesIO(image_bytes)
         mimetype = "image/png"
         fname = f"{oid}_{candid}_{type}.png"
+    return stamp_file, mimetype, fname
 
 
 def get_stamp_type(avro, type):
@@ -37,3 +38,17 @@ def oid2dir(oid, avro_root, ndisk):
         output_path = os.path.join(output_path, c)
     output_path = os.path.join(output_directory, output_path)
     return output_path
+
+def reverse_candid(candid):
+    """
+    Returns reverse digits of the candid
+
+    Parameters
+    ----------
+    candid : int
+        original candid to be reversed
+    """
+    n = int(candid)
+    reversed = int(str(n)[::-1])
+    return reversed
+

@@ -7,8 +7,8 @@ from botocore.exceptions import ClientError
 
 
 class S3Searcher:
-    def __init__(self, bucket_name):
-        self.client = boto3.client("s3")
+    def __init__(self, bucket_name, client=None):
+        self.client = client or boto3.client("s3")
         self.bucket_name = bucket_name
 
     def get_file_from_s3(self, oid, candid):
