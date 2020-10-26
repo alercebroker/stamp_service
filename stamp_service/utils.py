@@ -45,10 +45,9 @@ def reverse_candid(candid):
 
     Parameters
     ----------
-    candid : int
+    candid : int or str
         original candid to be reversed
     """
-    n = int(candid)
-    reversed = int(str(n)[::-1])
+    reversed = str(candid)[::-1]
     return reversed
 

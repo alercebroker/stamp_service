@@ -11,7 +11,7 @@ class S3Searcher:
         self.client = client or boto3.client("s3")
         self.bucket_name = bucket_name
 
-    def get_file_from_s3(self, oid, candid):
+    def get_file_from_s3(self, candid):
         reverse_candid = utils.reverse_candid(candid)
         file_name = f"{reverse_candid}.avro"
         avro_file = io.BytesIO()
@@ -24,19 +24,14 @@ class S3Searcher:
             else:
                 raise Exception(e)
 
-    def upload_file(self, file_name, object_name=None):
+    def upload_file(self, file_name, object_name):
         """Upload a file to an S3 bucket
 
         :param file_name: File to upload
         :param bucket: Bucket to upload to
         :param object_name: S3 object name. If not specified then file_name is used
-        :return: True if file was uploaded, else False
         """
-        # If S3 object_name was not specified, use file_name
-        if object_name is None:
-            object_name = file_name
-        # Upload the file
-        return self.client.upload_file(file_name, self.bucket_name, object_name)
+        return self.client.upload_fileobj(file_name, self.bucket_name, object_name)
 
 
 class MARSSearcher:
@@ -48,12 +43,12 @@ class MARSSearcher:
         payload = {"candid": candid, "format": "json"}
         resp = requests.get(self.mars_url, params=payload)
         resp_json = resp.json()
-        check_response(resp_json, oid, candid)
+        self.check_response(resp_json, oid, candid)
         return resp_json["results"][0]["avro"]
 
     def check_response(self, resp, oid, candid):
         assert "results" in resp
-        assert len(resp) == 1
+        assert len(resp["results"]) == 1
         assert "objectId" in resp["results"][0]
         assert resp["results"][0]["objectId"] == oid
         assert "candid" in resp["results"][0]
@@ -62,6 +57,10 @@ class MARSSearcher:
 
 
 class DiscSearcher:
+    def __init__(self, root_path, ndisk):
+        self.root_path = root_path
+        self.ndisk = int( ndisk )
+
     def get_file_from_disc(self, input_path):
         with open(input_path, "rb") as f:
             return fastavro.reader(f).next()
