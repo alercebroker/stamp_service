@@ -17,7 +17,8 @@ class TestS3Searcher(unittest.TestCase):
         self.client = boto3.client("s3")
         self.client.create_bucket(Bucket="test_bucket")
         self.upload_file("test_bucket")
-        self.searcher = S3Searcher(bucket_name="test_bucket", client=self.client)
+        self.searcher = S3Searcher()
+        self.searcher.init(bucket_name="test_bucket", client=self.client)
 
     def tearDown(self):
         del self.client
@@ -54,15 +55,18 @@ class TestS3Searcher(unittest.TestCase):
 
 class TestMARSSearcher(unittest.TestCase):
     def setUp(self):
-        self.searcher = MARSSearcher(mars_url="fake_url")
+        self.searcher = MARSSearcher()
+        self.searcher.init(mars_url="fake_url")
 
     def tearDown(self):
         del self.searcher
 
     @mock.patch("requests.get")
     @mock.patch.object(MARSSearcher, "check_response")
-    def test_get_file_from_mars(self, mock_check_response, mock_get):
+    @mock.patch("stamp_service.search.URLopener.open")
+    def test_get_file_from_mars(self, mock_open, mock_check_response, mock_get):
         mock_get.return_value.json.return_value = {"results": [{"avro": "avro"}]}
+        mock_open.return_value = "avro"
         resp = self.searcher.get_file_from_mars("oid", 123)
         self.assertEqual(resp, "avro")
 

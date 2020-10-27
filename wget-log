@@ -1,6 +1,0 @@
---2019-11-13 11:18:24--  https://avro.alerce.online/get_stamp?oid=ZTF19acryurj
-Resolving avro.alerce.online (avro.alerce.online)... 34.204.25.50
-Connecting to avro.alerce.online (avro.alerce.online)|34.204.25.50|:443... connected.
-HTTP request sent, awaiting response... 400 BAD REQUEST
-2019-11-13 11:18:25 ERROR 400: BAD REQUEST.
-
