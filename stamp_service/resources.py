@@ -196,8 +196,7 @@ class GetAVROResource(Resource):
         args = avro_parser.parse_args()
         try:
             data = s3_searcher.get_file_from_s3(args["candid"])
-            reverse_candid = utils.reverse_candid(args["candid"])
-            fname = f"{reverse_candid}.avro"
+            fname = f"{args['candid']}.avro"
             return send_file(
                 data,
                 mimetype="app/avro+binary",
@@ -217,8 +216,7 @@ class GetAVROResource(Resource):
                 file_name = "{}.avro".format(args["candid"])
                 input_path = os.path.join(input_directory, file_name)
                 data = disc_searcher.get_raw_file_from_disc(input_path)
-                reverse_candid = utils.reverse_candid(args["candid"])
-                fname = f"{reverse_candid}.avro"
+                fname = f"{args['candid']}.avro"
                 return send_file(
                     data,
                     mimetype="app/avro+binary",
@@ -240,6 +238,7 @@ class GetAVROResource(Resource):
             reverse_candid = utils.reverse_candid(args["candid"])
             file_name = "{}.avro".format(reverse_candid)
             s3_searcher.upload_file(data, file_name)
+            file_name = f"{args['candid']}.avro"
             return send_file(
                 data,
                 mimetype="app/avro+binary",
