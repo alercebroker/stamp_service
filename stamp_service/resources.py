@@ -10,21 +10,31 @@ import io
 import os
 
 stamp_parser = reqparse.RequestParser()
-stamp_parser.add_argument("oid", type=str, help="Object ID")
-stamp_parser.add_argument("candid", type=int, help="Alert id")
+stamp_parser.add_argument("oid", type=str, help="Object ID", required=True)
+stamp_parser.add_argument("candid", type=int, help="Alert id", required=True)
 stamp_parser.add_argument(
-    "type", type=str, help="Stamp type", choices=["science", "template", "difference"]
+    "type",
+    type=str,
+    help="Stamp type",
+    choices=["science", "template", "difference"],
+    required=True,
 )
 stamp_parser.add_argument(
-    "format", type=str, help="Stamp type", choices=["png", "fits"]
+    "format",
+    type=str,
+    help="Stamp type",
+    choices=["png", "fits"],
+    required=True,
 )
 
 avro_parser = reqparse.RequestParser()
-avro_parser.add_argument("oid", type=str, help="Object ID")
-avro_parser.add_argument("candid", type=int, help="Alert id")
+avro_parser.add_argument("oid", type=str, help="Object ID", required=True)
+avro_parser.add_argument("candid", type=int, help="Alert id", required=True)
 
 upload_parser = reqparse.RequestParser()
-upload_parser.add_argument("candid", type=int, help="Alert id", location="form")
+upload_parser.add_argument(
+    "candid", type=int, help="Alert id", location="form", required=True
+)
 upload_parser.add_argument("avro", location="files", type=FileStorage, required=True)
 
 api = Api(
