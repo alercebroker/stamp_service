@@ -9,6 +9,12 @@ The current documentation can be found [here](https://alerceapi.readthedocs.io/e
 
 ## How the data is stored
 
+### On Amazon S3 storage
+
+The index for objects in S3 is in the form `<reverse_candid>.avro`. That means that if an alert has `candid = 123`, the reverse candid would be `reverse_candid = 321`.
+
+### On disk
+
 The stamp service uses a 8 folder configuration to store the data.
 
 By default is mounted on the following directories `/mnt/stamps/[0-7]`.
@@ -48,12 +54,17 @@ Then the container can be created with
               stamp_service
 ```
 
-Some other configurations for the container are:
+Configuration env variables for the container are:
 
 ```
-PYTHONHASHSEED    Seed for Hash calculation (default 0)
-AVRO_ROOT         Location of disks         (default /mnt/stamps)
-APP_BIND          Gunicorn bind address     (default 0.0.0.0)
-APP_PORT          Gunicorn port             (default 8087)
-APP_WORKERS       Gunicorn num of workers   (default 6)
+BUCKET_NAME       Name of the S3 bucket        (no default)         Required
+MARS_URL          URL for the MARS API         (no default)         Required
+USE_DISK          Wether to use disks          (no default)         Optional (Do not set this variable if not using disks)
+ROOT_PATH         Location of disks            (no default)         Required if USE_DISK is set
+NDISK             How many disks are used      (no default)         Required if USE_DISK is set
+PYTHONHASHSEED    Seed for Hash calculation    (default 0)          Optional if not using disks
+APP_BIND          Gunicorn bind address        (default 0.0.0.0)
+APP_PORT          Gunicorn port                (default 8087)
+APP_WORKERS       Gunicorn num of workers      (default 6)
+TEST_MODE         If running unittest          (no default)         Optional (Do not set this variable if in production)
 ```
