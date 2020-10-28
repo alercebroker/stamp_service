@@ -1,8 +1,9 @@
-from flask import Flask 
+from flask import Flask
 from flask_cors import CORS
 import requests
 import wget
 import os
+
 
 def create_app(config):
     application = Flask(__name__)
@@ -14,10 +15,13 @@ def create_app(config):
         s3_searcher.init(bucket_name=os.environ["BUCKET_NAME"])
         mars_searcher.init(mars_url=os.environ["MARS_URL"])
         if os.getenv("USE_DISK", False):
-            disc_searcher.init(root_path=os.environ["ROOT_PATH"], ndisk=os.environ["NDISK"])
+            disc_searcher.init(
+                root_path=os.environ["ROOT_PATH"], ndisk=os.environ["NDISK"]
+            )
         else:
             disc_searcher = None
-        
+
         from .resources import api
+
         api.init_app(application)
     return application

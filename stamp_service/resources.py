@@ -60,7 +60,7 @@ class StampResource(Resource):
                 f"AVRO {args['candid']} not found in S3. Searching in disc."
             )
         # Search in disc
-        if disc_searcher:
+        if os.getenv("USE_DISK", False):
             try:
                 input_directory = utils.oid2dir(
                     args["oid"], disc_searcher.root_path, disc_searcher.ndisk
@@ -131,7 +131,7 @@ class GetAVROInfoResource(Resource):
                 f"AVRO {args['candid']} not found in S3. Searching in disc."
             )
 
-        if disc_searcher:
+        if os.getenv("USE_DISK", False):
             try:
                 input_directory = utils.oid2dir(
                     args["oid"], disc_searcher.root_path, disc_searcher.ndisk
@@ -209,7 +209,7 @@ class GetAVROResource(Resource):
                 f"AVRO {args['candid']} not found in S3. Searching in disc."
             )
 
-        if disc_searcher:
+        if os.getenv("USE_DISK", False):
             try:
                 input_directory = utils.oid2dir(
                     args["oid"], disc_searcher.root_path, disc_searcher.ndisk
