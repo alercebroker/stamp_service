@@ -15,5 +15,4 @@ ENV APP_WORKERS=6
 
 RUN mkdir /mnt/stamps
 
-WORKDIR /app/scripts
-CMD ["/bin/bash","entrypoint.sh"]
+CMD ["/bin/bash","scripts/entrypoint.sh"]
