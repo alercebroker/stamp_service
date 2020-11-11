@@ -1,5 +1,8 @@
 FROM python:3.6.8
 
+RUN apt-get update
+RUN apt-get -y install libsnappy-dev
+
 WORKDIR /app
 
 COPY requirements.txt /app/requirements.txt
