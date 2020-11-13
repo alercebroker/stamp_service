@@ -5,6 +5,7 @@ from . import utils
 from .search import s3_searcher, mars_searcher, disc_searcher
 from flask import current_app as app
 from flask import request, send_file, Response, jsonify
+from urllib.request import urlopen
 import fastavro
 import io
 import os
@@ -95,7 +96,8 @@ class StampResource(Resource):
         # Search in MARS
         try:
             avro_file = mars_searcher.get_file_from_mars(args["oid"], args["candid"])
-            data = fastavro.reader(avro_file).next()
+            avro_io = mars_searcher.opener.open(avro_file)
+            data = fastavro.reader(avro_io).next()
             stamp_data = utils.get_stamp_type(data, args["type"])
         except Exception as e:
             app.logger.error("File could not be retreived from any source.")
@@ -107,7 +109,7 @@ class StampResource(Resource):
             app.logger.info("Uploading Avro from MARS to S3")
             reverse_candid = utils.reverse_candid(args["candid"])
             file_name = "{}.avro".format(reverse_candid)
-            s3_searcher.upload_file(avro_file, file_name)
+            s3_searcher.upload_file(urlopen(avro_file), file_name)
             stamp_file, mimetype, fname = utils.format_stamp(
                 stamp_data, args["format"], args["oid"], args["candid"], args["type"]
             )

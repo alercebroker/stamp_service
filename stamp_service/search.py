@@ -46,6 +46,7 @@ class S3Searcher:
 class MARSSearcher:
     def init(self, mars_url):
         self.mars_url = mars_url
+        self.opener = URLopener()
         # https://mars.lco.global/?candid={}&format=json
 
     def get_file_from_mars(self, oid, candid):
@@ -53,8 +54,7 @@ class MARSSearcher:
         resp = requests.get(self.mars_url, params=payload)
         resp_json = resp.json()
         self.check_response(resp_json, oid, candid)
-        file = URLopener().open(resp_json["results"][0]["avro"])
-        return file
+        return resp_json["results"][0]["avro"]
 
     def check_response(self, resp, oid, candid):
         assert "results" in resp
@@ -77,6 +77,7 @@ class DiscSearcher:
 
     def get_raw_file_from_disc(self, input_path):
         return open(input_path, "rb")
+
 
 s3_searcher = S3Searcher()
 mars_searcher = MARSSearcher()
