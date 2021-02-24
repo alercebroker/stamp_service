@@ -95,11 +95,14 @@ class StampResource(Resource):
         # Search in MARS
         try:
             avro_file = mars_searcher.get_file_from_mars(args["oid"], args["candid"])
+            app.logger.error(avro_file)
             avro_io = mars_searcher.opener.open(avro_file)
+            app.logger.error(avro_io)
             data = fastavro.reader(avro_io).next()
             stamp_data = utils.get_stamp_type(data, args["type"])
+            app.logger.error(stamp_data)
         except Exception as e:
-            app.logger.error(f"[MISS] Candid {args['candid']} could not be retrieved from any source.")
+            app.logger.error(f"[MISS] Candid {args['candid']} could not be retrieved from MARS.")
             raise NotFound("AVRO not found")
 
         # Upload to S3 from MARS
@@ -164,7 +167,7 @@ class GetAVROInfoResource(Resource):
             del data["cutoutTemplate"]
             del data["cutoutDifference"]
         except Exception as e:
-            app.logger.error("File could not be retreived from any source.")
+            app.logger.error("File could not be retrieved from any source.")
             app.logger.error(f"Error: {e}")
             raise NotFound("AVRO not found")
         try:

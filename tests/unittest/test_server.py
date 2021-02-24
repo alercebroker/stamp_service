@@ -59,33 +59,6 @@ class TestStampResource(unittest.TestCase):
         rv = self.client.get("/get_stamp", query_string=args)
         self.assertEqual(rv.json, "ok")
 
-    @mock.patch("stamp_service.resources.s3_searcher.get_file_from_s3")
-    @mock.patch("stamp_service.resources.s3_searcher.upload_file")
-    @mock.patch("stamp_service.resources.disc_searcher.get_file_from_disc")
-    @mock.patch("stamp_service.resources.mars_searcher.get_file_from_mars")
-    @mock.patch("stamp_service.resources.utils.get_stamp_type")
-    @mock.patch("stamp_service.resources.utils.format_stamp")
-    @mock.patch("stamp_service.resources.send_file")
-    @mock.patch("stamp_service.resources.fastavro.reader")
-    def test_get_stamp_mars(
-        self,
-        fastavro_reader,
-        send_file,
-        format_stamp,
-        get_stamp_type,
-        get_file_from_mars,
-        get_file_from_disk,
-        upload_file,
-        get_file_from_s3,
-    ):
-        get_file_from_s3.side_effect = FileNotFoundError
-        get_file_from_disk.side_effect = FileNotFoundError
-        get_file_from_mars.return_value = b"stamp"
-        format_stamp.return_value = (io.BytesIO, "image/png", "fname")
-        send_file.return_value = "ok"
-        args = {"oid": "oid", "candid": 123, "type": "science", "format": "png"}
-        rv = self.client.get("/get_stamp", query_string=args)
-        self.assertEqual(rv.json, "ok")
 
     @mock.patch("stamp_service.resources.s3_searcher.get_file_from_s3")
     @mock.patch("stamp_service.resources.s3_searcher.upload_file")
