@@ -47,7 +47,6 @@ class MARSSearcher:
     def init(self, mars_url):
         self.mars_url = mars_url
         self.opener = URLopener()
-        # https://mars.lco.global/?candid={}&format=json
 
     def get_file_from_mars(self, oid, candid):
         payload = {"candid": candid, "format": "json"}

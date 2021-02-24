@@ -1,9 +1,18 @@
 from flask import Flask
 from flask_cors import CORS
+
 import os
+import logging
+
+
+def init_logging():
+    logging.basicConfig(level="INFO",
+                        format='%(asctime)s %(levelname)s %(module)s %(name)s.%(funcName)s: %(message)s',
+                        datefmt='%Y-%m-%d %H:%M:%S')
 
 
 def create_app(config):
+    init_logging()
     application = Flask(__name__)
     application.config.from_object(config)
     CORS(application)

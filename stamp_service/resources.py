@@ -1,13 +1,13 @@
-from flask_restx import Namespace, Resource, reqparse, Api
+from flask_restx import Resource, reqparse, Api
 from werkzeug.exceptions import NotFound
 from werkzeug.datastructures import FileStorage
 from . import utils
 from .search import s3_searcher, mars_searcher, disc_searcher
 from flask import current_app as app
-from flask import request, send_file, Response, jsonify
+from flask import send_file, jsonify
 from urllib.request import urlopen
+
 import fastavro
-import io
 import os
 
 stamp_parser = reqparse.RequestParser()
@@ -41,7 +41,7 @@ upload_parser.add_argument("avro", location="files", type=FileStorage, required=
 api = Api(
     version="1.0.0",
     title="ALeRCE AVRO Service",
-    description="API for retreiving avro information and stamps.",
+    description="API for retrieving avro information and stamps.",
 )
 
 
@@ -60,6 +60,7 @@ class StampResource(Resource):
             stamp_file, mimetype, fname = utils.format_stamp(
                 data, args["format"], args["oid"], args["candid"], args["type"]
             )
+            app.logger.info(f"[HIT] AVRO {args['candid']} found in S3.")
             return send_file(
                 stamp_file,
                 mimetype=mimetype,
@@ -67,9 +68,7 @@ class StampResource(Resource):
                 as_attachment=True,
             )
         except FileNotFoundError:
-            app.logger.info(
-                f"AVRO {args['candid']} not found in S3. Searching in disc."
-            )
+            app.logger.info(f"[MISS] AVRO {args['candid']} not found in S3.")
         # Search in disc
         if os.getenv("USE_DISK", False):
             try:
@@ -100,13 +99,12 @@ class StampResource(Resource):
             data = fastavro.reader(avro_io).next()
             stamp_data = utils.get_stamp_type(data, args["type"])
         except Exception as e:
-            app.logger.error("File could not be retreived from any source.")
-            app.logger.error(f"Error: {e}")
+            app.logger.error(f"[MISS] Candid {args['candid']} could not be retrieved from any source.")
             raise NotFound("AVRO not found")
 
         # Upload to S3 from MARS
         try:
-            app.logger.info("Uploading Avro from MARS to S3")
+            app.logger.info(f"[HIT] Candid {args['candid']} found in MARS. Uploading from MARS to S3")
             reverse_candid = utils.reverse_candid(args["candid"])
             file_name = "{}.avro".format(reverse_candid)
             s3_searcher.upload_file(urlopen(avro_file), file_name)

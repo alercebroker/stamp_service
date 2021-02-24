@@ -1,4 +1,6 @@
 import sys
+import logging
+
 sys.path.append("..")
 from stamp_service.server import create_app
 
