@@ -67,6 +67,7 @@ class TestMARSSearcher(unittest.TestCase):
     def test_get_file_from_mars(self, mock_open, mock_check_response, mock_get):
         mock_get.return_value.json.return_value = {"results": [{"avro": "avro"}]}
         mock_open.return_value = "avro"
+        mock_get.return_value.status_code = 200
         resp = self.searcher.get_file_from_mars("oid", 123)
         self.assertEqual(resp, "avro")
 

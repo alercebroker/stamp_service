@@ -95,19 +95,20 @@ class StampResource(Resource):
         # Search in MARS
         try:
             avro_file = mars_searcher.get_file_from_mars(args["oid"], args["candid"])
-            app.logger.error(avro_file)
             avro_io = mars_searcher.opener.open(avro_file)
-            app.logger.error(avro_io)
             data = fastavro.reader(avro_io).next()
             stamp_data = utils.get_stamp_type(data, args["type"])
-            app.logger.error(stamp_data)
         except Exception as e:
-            app.logger.error(f"[MISS] Candid {args['candid']} could not be retrieved from MARS.")
+            app.logger.error(
+                f"[MISS] Candid {args['candid']} could not be retrieved from MARS."
+            )
             raise NotFound("AVRO not found")
 
         # Upload to S3 from MARS
         try:
-            app.logger.info(f"[HIT] Candid {args['candid']} found in MARS. Uploading from MARS to S3")
+            app.logger.info(
+                f"[HIT] Candid {args['candid']} found in MARS. Uploading from MARS to S3"
+            )
             reverse_candid = utils.reverse_candid(args["candid"])
             file_name = "{}.avro".format(reverse_candid)
             s3_searcher.upload_file(urlopen(avro_file), file_name)
@@ -140,7 +141,7 @@ class GetAVROInfoResource(Resource):
             del data["cutoutDifference"]
             return jsonify(data)
         except FileNotFoundError:
-            app.logger.info(
+            app.logger.error(
                 f"AVRO {args['candid']} not found in S3. Searching in disc."
             )
 
@@ -157,12 +158,13 @@ class GetAVROInfoResource(Resource):
                 del data["cutoutDifference"]
                 return jsonify(data)
             except FileNotFoundError:
-                app.logger.info(
+                app.logger.error(
                     f"AVRO {args['candid']} not found in disc. Searching in MARS"
                 )
         try:
             avro_file = mars_searcher.get_file_from_mars(args["oid"], args["candid"])
-            data = fastavro.reader(avro_file).next()
+            avro_io = mars_searcher.opener.open(avro_file)
+            data = fastavro.reader(avro_io).next()
             del data["cutoutScience"]
             del data["cutoutTemplate"]
             del data["cutoutDifference"]
@@ -174,7 +176,7 @@ class GetAVROInfoResource(Resource):
             app.logger.info("Uploading Avro from MARS to S3")
             reverse_candid = utils.reverse_candid(args["candid"])
             file_name = "{}.avro".format(reverse_candid)
-            s3_searcher.upload_file(avro_file, file_name)
+            s3_searcher.upload_file(avro_io, file_name)
             return jsonify(data)
         except Exception as e:
             raise e
@@ -241,7 +243,8 @@ class GetAVROResource(Resource):
                     f"AVRO {args['candid']} not found in disc. Searching in MARS"
                 )
         try:
-            data = mars_searcher.get_file_from_mars(args["oid"], args["candid"])
+            avro_file = mars_searcher.get_file_from_mars(args["oid"], args["candid"])
+            avro_io = mars_searcher.opener.open(avro_file)
         except Exception as e:
             app.logger.error("File could not be retreived from any source.")
             app.logger.error(f"Error: {e}")
@@ -250,10 +253,10 @@ class GetAVROResource(Resource):
             app.logger.info("Uploading Avro from MARS to S3")
             reverse_candid = utils.reverse_candid(args["candid"])
             file_name = "{}.avro".format(reverse_candid)
-            s3_searcher.upload_file(data, file_name)
+            s3_searcher.upload_file(avro_io, file_name)
             file_name = f"{args['candid']}.avro"
             return send_file(
-                data,
+                avro_io,
                 mimetype="app/avro+binary",
                 attachment_filename=file_name,
                 as_attachment=True,
