@@ -51,6 +51,21 @@ class TestStampResource(VCRTestCase):
             client = boto3.client("s3")
             client.upload_fileobj(avro, bucket, object_name_reversed)
 
+    @mock.patch("stamp_service.server.before_request")
+    @mock.patch(
+        "stamp_service.server.after_request",
+        side_effect=lambda response, logger: response,
+    )
+    def test_callbacks(self, after_request, before_request):
+        rv = self.test_client.get("/")
+        self.assertEqual(rv.status, "200 OK")
+        before_request.assert_called()
+        after_request.assert_called()
+        rv = self.test_client.get("error")
+        self.assertNotEqual(rv.status, "200 OK")
+        before_request.assert_called()
+        after_request.assert_called()
+
     def test_get_stamp_s3(self):
         self.upload_file("test_bucket")
         args = {
