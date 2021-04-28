@@ -180,6 +180,8 @@ class GetAVROInfoResource(Resource):
             reverse_candid = utils.reverse_candid(args["candid"])
             file_name = "{}.avro".format(reverse_candid)
             s3_searcher.upload_file(avro_io, file_name)
+            data["candidate"]["candid"] = str(data["candidate"]["candid"])
+            data["candid"] = str(data["candid"])
             return jsonify(data)
         except Exception as e:
             raise e
