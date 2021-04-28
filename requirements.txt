@@ -9,4 +9,5 @@ wget==3.2
 boto3==1.16.3
 flask-restx==0.2.0
 python-snappy==0.5.4
+prometheus-flask-exporter>=0.18.1
 

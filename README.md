@@ -57,14 +57,16 @@ Then the container can be created with
 Configuration env variables for the container are:
 
 ```
-BUCKET_NAME       Name of the S3 bucket        (no default)         Required
-MARS_URL          URL for the MARS API         (no default)         Required
-USE_DISK          Wether to use disks          (no default)         Optional (Do not set this variable if not using disks)
-ROOT_PATH         Location of disks            (no default)         Required if USE_DISK is set
-NDISK             How many disks are used      (no default)         Required if USE_DISK is set
-PYTHONHASHSEED    Seed for Hash calculation    (default 0)          Optional if not using disks
-APP_BIND          Gunicorn bind address        (default 0.0.0.0)
-APP_PORT          Gunicorn port                (default 8087)
-APP_WORKERS       Gunicorn num of workers      (default 6)
-TEST_MODE         If running unittest          (no default)         Optional (Do not set this variable if in production)
+BUCKET_NAME               Name of the S3 bucket        (no default)         Required
+MARS_URL                  URL for the MARS API         (no default)         Required
+USE_DISK                  Wether to use disks          (no default)         Optional (Do not set this variable if not using disks)
+ROOT_PATH                 Location of disks            (no default)         Required if USE_DISK is set
+NDISK                     How many disks are used      (no default)         Required if USE_DISK is set
+PYTHONHASHSEED            Seed for Hash calculation    (default 0)          Optional if not using disks
+APP_BIND                  Gunicorn bind address        (default 0.0.0.0)
+APP_PORT                  Gunicorn port                (default 8087)
+APP_WORKERS               Gunicorn num of workers      (default 6)
+TEST_MODE                 If running unittest          (no default)         Optional (Do not set this variable if in production)
+LOG_LEVEL                 LOG level                    (default info)       Optional
+prometheus_multiproc_dir  Directory for metrics        (no default)         Required
 ```

@@ -9,43 +9,43 @@ interactions:
       Connection:
       - keep-alive
       User-Agent:
-      - python-requests/2.22.0
+      - python-requests/2.25.1
     method: GET
     uri: https://mars.lco.global/?candid=820128985515010010&format=json
   response:
     body:
       string: !!binary |
-        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
+        H4sIAAAAAAAAA4RW/YvkxhH9PX/FInBIYKa3vz8GlrCcczn7OAi+Ax8OYeiRWjOyNZIsaXbOa+5/
+        z6se7cziBLIsu616/VFd9epV/14c4rTt0pe52NSxndIqG4YxPV0NY5pO7TwVm3/9XsSnsS82xWGe
+        h2lzfz8pdprW5zTNa8niMT73XTxPrOyP989zvY5tGmfWlj3bt/0utveSi3DP9T0X9x5j6YM3Rhgu
+        OH4Zbf63z+vH4/P6sd33YzMfjg+PP37U63cfHt+sP757lMb++TLhzZiq1M1NbB8e33/3aN9+0m8+
+        /6A///PbN+rH999/I99KLgXXQmN49RHjSeEPnNTbMf16gnXZ8Ns4p4eXNZ+kVBj8tGB//zI0iMKD
+        5dpzvhg/NvsuVe9SrNI4PRz6604ExPk0pgcXapvcToWo1a5UVZV2Oxe4U84p72udohHSeK53lTO+
+        ltGogPlp51RwksdiVZSxq5qq2Px3uF4w+F1skJnmGPcYcWacDvjxntNZYrVAY5wzKqUH7hwXVuuw
+        KnbFZi0CC1JZoY3VXjoL63U7FRRtF5TnQgj3Ai3bKeOlNYFb46TS8v84fGi6sdgIBhpw/BiluaHT
+        AAxTXWws81oiNFaGIJRSQNo4TXMc6awQDK3i2lmvHJ3VjmWf6ppAgasKLLMSfga1gKeuJBCLsK3D
+        1QJccl5c8GOqloDlfXkwyjqdofE4ESS5M8FdVuPcVVGlkuKlWTDGB6GzhS51tblsa2eUw75FcibE
+        qTu17c06pprmMw9/pHHCWNwGeaqauqZFzRExckxJYbQ1BkkxtGczzV2Og9CSoo67UrrcBRqmbhQX
+        VCA85JswJtgbKpEUZrxF6BEqboJ5tVThyMCQLFxTcwt+IkTVuLv6Pu6ewPOm71D+4GU1kbe4hmMa
+        rLBcKS4RJ0K6HDwhmFRSBs3hK3xaFantuz2lXxtwiiMPFoUAJ9KXYW6OYJtCqlZFTfyR9D+1FRkt
+        jds54fbFiMPr8+GYaQQea+GFNZJbULnJTg09Ti9qzPuZ9tHGI8HMEhmFIWPqqkNDafnfWE4PQVo5
+        5p10JiPEwvm2TlvJPGKMlVf0ulJZw4jyBkFsYaL6gptEQcr5qkCa44ArWGZAc85RYs5ztQC7Zp8x
+        VJ0JAfl3nuoY2CXoiBI5TtVghQrS+QzWY3/M5OGMztHWQ8OUlVTlgPexidhWMwPSKK9dQMGrK7Qb
+        m/0BlxOKaWiEldzIIJzJE3LZYmWQuVAcClRnIJctXNVOE5eRcWttRp6HqWwoHIwTvzWo5SGrN2wp
+        MdDDaGSSJoHT7jbhVry4h1NGgGQOVKMpTVfNfapIoqTlDLEjqQGlKYjdLlJhY1D2T5eUWTJXaUkg
+        faQ4XiKCkgEbLUJpdQBjzQ18iYlErqUTJI1QTqrGrh7jMU0548ScbtE8jI5xLg8Jd7MkD90RXwO+
+        kISuS/s86Hc/p3JuqmFCyaIeDRWDRLA1yOBf4/IVDvUKpEavcXXDRcAWKDfsPxBPmiOKJnWRCqtA
+        O95S9+UaKg66O75FXFFa2+dxWwq97be/6i2CfsSVLqv3rG7Q9rHbH/UcprHfIwAEiOvXgHQX70/t
+        L3HsGqwbEVyPEpLCcyvpm2h0sThrsZD0BeF3DpLmQWlQjsj6WmtmYba12ZaKNizpQCrHMWsE3Bdo
+        2WSYyn7E5gaaEyAraONoIwKhnBK1qgavFknaMu3BLkE5Yxwhg2JB7ywVUEYQ7jWq7jpTvf6mM1LW
+        2IAeo0BWbrTLh1wwmbvJ9VPlqcaAWuA1VvCAKEyHOA65Y4DayuXe6h35ommnZr9oA5qPMLn1GniI
+        aryBWR84ylRR4xIawhK4eMEvTYKLy9YBhAa/7YLmekXI0XYdzAJlB04RuMRFMw0KosnCtSxVGZEk
+        YkwJPAK4J713dkFURqAY8MQjg5z0cPrlt3w/qILEgyKQTgVDHo7XY2CR9ErxVhDlM/I6/OMfwj+9
+        NMCbZbnszUBkJ0tBTavIlksv8gyPHWRLg8M6Z+x0XF4wpHRBSA3lcjyH4vnqo6JGyTUJG7W2jLz2
+        8XkJAG5q6FWFpqahVKti3rW5NjBp7vu6jfusR+fYtttLqys+9N3qjou7x2G8o8q842rDzUbru398
+        +ATfv+Q+htoREGyBPApPYvzbxYxqZzbgQaoJwIWeh/zgebrwCqzAq8vRu8cEr6hkn4f83IEeC4Wu
+        EqwL9LD4ig5V9ttcWE4hi+KqP9/BVvz06a3wsTydz8NAWnDCzaZDbsWA7v5yPp8ZxIWVEQ26PLBU
+        nf5afP331z/9BwAA//8DAPaA/9ZbDAAA
     headers:
       Connection:
       - keep-alive
@@ -54,7 +54,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Tue, 27 Oct 2020 21:12:29 GMT
+      - Wed, 14 Apr 2021 22:31:04 GMT
       Server:
       - nginx/1.19.1
       Transfer-Encoding:
@@ -74,9 +74,9 @@ interactions:
       Host:
       - s3.us-west-2.amazonaws.com
       User-Agent:
-      - Python-urllib/3.8
+      - Python-urllib/3.7
     method: GET
-    uri: https://s3.us-west-2.amazonaws.com/ztf-alert.lco.global/2019/04/01/820128985515010010.avro?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6FT4CXR4XPDC3WKJ%2F20201027%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20201027T211229Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=1d8337d3031a68ac236078e19970e50ed1bdb2dc3bddf5444fdaee6fab06a5c9
+    uri: https://s3.us-west-2.amazonaws.com/ztf-alert.lco.global/2019/04/01/820128985515010010.avro?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6FT4CXR4XPDC3WKJ%2F20210414%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20210414T223104Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=79f6e7b39a43bc3ddebb7907377388f4ea5125804bd758f2a539e7beb739720a
   response:
     body:
       string: !!binary |
@@ -1234,7 +1234,7 @@ interactions:
       Content-Type:
       - avro/binary
       Date:
-      - Tue, 27 Oct 2020 21:12:31 GMT
+      - Wed, 14 Apr 2021 22:31:06 GMT
       ETag:
       - '"a0c62fe9aed92323ff10b287b9b1d87d"'
       Last-Modified:
@@ -1242,9 +1242,9 @@ interactions:
       Server:
       - AmazonS3
       x-amz-id-2:
-      - iewmps3eJPEvHQ+oJWLXrtkUgmgwcNik3OsjqJdntRyn4i/BO27XbFw0aLQxW6xD/r6WXGrekRE=
+      - wlV5DbG3HtHxPSbSRlobywpI5A4WYvxMFA2abdb6Qs3r+kLk6q2zJsgLsTs7QCDjStmnwtoTZ04=
       x-amz-request-id:
-      - 71A61271C088E9B7
+      - B4QSS6K9N2S80AX9
     status:
       code: 200
       message: OK

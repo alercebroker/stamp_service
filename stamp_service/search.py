@@ -51,6 +51,8 @@ class MARSSearcher:
     def get_file_from_mars(self, oid, candid):
         payload = {"candid": candid, "format": "json"}
         resp = requests.get(self.mars_url, params=payload)
+        if resp.status_code is not 200:
+            raise Exception("Unable to download from MARS")
         resp_json = resp.json()
         self.check_response(resp_json, oid, candid)
         return resp_json["results"][0]["avro"]

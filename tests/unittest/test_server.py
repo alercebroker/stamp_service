@@ -31,7 +31,7 @@ class TestStampResource(unittest.TestCase):
     @mock.patch("stamp_service.resources.send_file")
     @mock.patch("stamp_service.resources.fastavro.reader")
     def test_get_stamp_s3(
-            self, reader, send_file, format_stamp, get_stamp_type, get_avro_from_s3
+        self, reader, send_file, format_stamp, get_stamp_type, get_avro_from_s3
     ):
         format_stamp.return_value = (io.BytesIO, "image/png", "fname")
         send_file.return_value = "ok"
@@ -58,7 +58,6 @@ class TestStampResource(unittest.TestCase):
         args = {"oid": "oid", "candid": 123, "type": "science", "format": "png"}
         rv = self.client.get("/get_stamp", query_string=args)
         self.assertEqual(rv.json, "ok")
-
 
     @mock.patch("stamp_service.resources.s3_searcher.get_file_from_s3")
     @mock.patch("stamp_service.resources.s3_searcher.upload_file")
@@ -141,8 +140,10 @@ class TestAVROInfoResource(unittest.TestCase):
     @mock.patch("stamp_service.resources.mars_searcher.get_file_from_mars")
     @mock.patch("stamp_service.resources.fastavro.reader")
     @mock.patch("stamp_service.resources.jsonify")
+    @mock.patch("stamp_service.resources.mars_searcher.opener.open")
     def test_get_stamp_mars(
         self,
+        opener_open,
         jsonify,
         reader,
         get_file_from_mars,
@@ -152,7 +153,8 @@ class TestAVROInfoResource(unittest.TestCase):
     ):
         get_file_from_s3.side_effect = FileNotFoundError
         get_file_from_disk.side_effect = FileNotFoundError
-        get_file_from_mars.return_value = b"data"
+        get_file_from_mars.return_value = "test"
+        opener_open.return_value = b"data"
         reader.next.return_value = {
             "cutoutScience": {},
             "cutoutTemplate": {},
@@ -202,9 +204,10 @@ class TestPutAVROResource(unittest.TestCase):
             "/put_avro",
             data={"avro": (io.BytesIO(b"data"), "avro.avro"), "candid": 123},
             follow_redirects=True,
-            content_type="multipart/form-data"
+            content_type="multipart/form-data",
         )
         self.assertEqual(rv.json, "ok")
+
 
 class TestAVROResource(unittest.TestCase):
     def setUp(self):
@@ -245,17 +248,20 @@ class TestAVROResource(unittest.TestCase):
     @mock.patch("stamp_service.resources.disc_searcher.get_file_from_disc")
     @mock.patch("stamp_service.resources.mars_searcher.get_file_from_mars")
     @mock.patch("stamp_service.resources.send_file")
+    @mock.patch("stamp_service.resources.mars_searcher.opener.open")
     def test_get_stamp_mars(
         self,
+        opener_open,
         send_file,
         get_file_from_mars,
         get_file_from_disk,
         upload_file,
         get_file_from_s3,
     ):
+        opener_open.return_value = b"data"
         get_file_from_s3.side_effect = FileNotFoundError
         get_file_from_disk.side_effect = FileNotFoundError
-        get_file_from_mars.return_value = b"data"
+        get_file_from_mars.return_value = "test"
         send_file.return_value = "ok"
         args = {"oid": "oid", "candid": 123, "type": "science", "format": "png"}
         rv = self.client.get("/get_avro", query_string=args)
@@ -278,4 +284,3 @@ class TestAVROResource(unittest.TestCase):
         args = {"oid": "oid", "candid": 123, "type": "science", "format": "png"}
         rv = self.client.get("/get_avro", query_string=args)
         self.assertEqual(rv.status, "404 NOT FOUND")
-

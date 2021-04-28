@@ -4,17 +4,14 @@ on:
   pull_request:
     branches:
       - main
-  push:
-    branches:
-      - main
-
+      - develop
 
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8]
+        python-version: [3.6]
     steps:
       - name: Checkout Git branch
         uses: actions/checkout@v2
