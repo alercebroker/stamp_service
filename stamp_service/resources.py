@@ -141,6 +141,8 @@ class GetAVROInfoResource(Resource):
             del data["cutoutTemplate"]
             del data["cutoutDifference"]
             app.logger.info(f"[HIT] AVRO {args['candid']} found in S3.")
+            data["candidate"]["candid"] = str(data["candidate"]["candid"])
+            data["candid"] = str(data["candid"])
             return jsonify(data)
         except FileNotFoundError:
             app.logger.info(f"[MISS] AVRO {args['candid']} not found in S3.")
@@ -157,6 +159,8 @@ class GetAVROInfoResource(Resource):
                 del data["cutoutTemplate"]
                 del data["cutoutDifference"]
                 app.logger.info(f"[HIT] AVRO {args['candid']} found in disk.")
+                data["candidate"]["candid"] = str(data["candidate"]["candid"])
+                data["candid"] = str(data["candid"])
                 return jsonify(data)
             except FileNotFoundError:
                 app.logger.info(
