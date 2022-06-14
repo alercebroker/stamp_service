@@ -1,6 +1,6 @@
 import unittest
 from unittest import mock
-from stamp_service.search import S3Searcher, DiscSearcher, MARSSearcher, boto3, io
+from stamp_service.search import S3Searcher, MARSSearcher, boto3, io
 from moto import mock_s3
 import os
 

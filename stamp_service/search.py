@@ -67,19 +67,5 @@ class MARSSearcher:
         assert "avro" in resp["results"][0]
 
 
-class DiscSearcher:
-    def init(self, root_path, ndisk):
-        self.root_path = root_path
-        self.ndisk = int(ndisk)
-
-    def get_file_from_disc(self, input_path):
-        with open(input_path, "rb") as f:
-            return fastavro.reader(f).next()
-
-    def get_raw_file_from_disc(self, input_path):
-        return open(input_path, "rb")
-
-
 s3_searcher = S3Searcher()
 mars_searcher = MARSSearcher()
-disc_searcher = DiscSearcher()
