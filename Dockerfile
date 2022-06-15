@@ -1,4 +1,4 @@
-FROM python:3.6.8
+FROM python:3.9
 
 RUN apt-get update
 RUN apt-get -y install libsnappy-dev

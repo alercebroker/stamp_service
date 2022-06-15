@@ -1,9 +1,8 @@
 from vcr_unittest import VCRTestCase
-from unittest import mock, TestCase
+from unittest import mock
 from moto import mock_s3
 import os
 import io
-import logging
 
 FILE_PATH = os.path.dirname(__file__)
 EXAMPLES_PATH = os.path.join(FILE_PATH, "../examples/avro_test")
@@ -15,7 +14,6 @@ os.environ["AWS_SECRET_ACCESS_KEY"] = "testing"
 os.environ["AWS_SECURITY_TOKEN"] = "testing"
 os.environ["AWS_SESSION_TOKEN"] = "testing"
 from stamp_service.server import create_app
-from stamp_service.resources import NotFound
 import boto3
 
 

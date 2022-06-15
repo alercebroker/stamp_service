@@ -5,6 +5,7 @@ from .callbacks import after_request, before_request
 import os
 import logging
 
+
 def create_app(config):
     application = Flask(__name__)
     application.config.from_object(config)

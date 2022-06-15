@@ -90,10 +90,8 @@ class TestAVROInfoResource(unittest.TestCase):
     @mock.patch("stamp_service.resources.mars_searcher.get_file_from_mars")
     @mock.patch("stamp_service.resources.fastavro.reader")
     @mock.patch("stamp_service.resources.jsonify")
-    @mock.patch("stamp_service.resources.mars_searcher.opener.open")
     def test_get_stamp_mars(
         self,
-        opener_open,
         jsonify,
         reader,
         get_file_from_mars,
@@ -101,8 +99,7 @@ class TestAVROInfoResource(unittest.TestCase):
         get_file_from_s3,
     ):
         get_file_from_s3.side_effect = FileNotFoundError
-        get_file_from_mars.return_value = "test"
-        opener_open.return_value = b"data"
+        get_file_from_mars.return_value = b"test"
         reader.next.return_value = {
             "cutoutScience": {},
             "cutoutTemplate": {},
@@ -177,18 +174,15 @@ class TestAVROResource(unittest.TestCase):
     @mock.patch("stamp_service.resources.s3_searcher.upload_file")
     @mock.patch("stamp_service.resources.mars_searcher.get_file_from_mars")
     @mock.patch("stamp_service.resources.send_file")
-    @mock.patch("stamp_service.resources.mars_searcher.opener.open")
     def test_get_stamp_mars(
         self,
-        opener_open,
         send_file,
         get_file_from_mars,
         upload_file,
         get_file_from_s3,
     ):
-        opener_open.return_value = b"data"
         get_file_from_s3.side_effect = FileNotFoundError
-        get_file_from_mars.return_value = "test"
+        get_file_from_mars.return_value = b"test"
         send_file.return_value = "ok"
         args = {"oid": "oid", "candid": 123, "type": "science", "format": "png"}
         rv = self.client.get("/get_avro", query_string=args)

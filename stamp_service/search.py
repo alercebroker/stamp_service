@@ -4,7 +4,7 @@ from . import utils
 import io
 import boto3
 from botocore.exceptions import ClientError
-from urllib.request import URLopener
+from urllib.request import urlopen
 
 
 class S3Searcher:
@@ -15,7 +15,6 @@ class S3Searcher:
     def get_file_from_s3(self, candid):
         reverse_candid = utils.reverse_candid(candid)
         file_name = f"{reverse_candid}.avro"
-        avro_file = io.BytesIO()
         try:
             # self.client.download_fileobj(self.bucket_name, file_name, avro_file)
             f = self.client.get_object(Bucket=self.bucket_name, Key=file_name)[
@@ -46,16 +45,16 @@ class S3Searcher:
 class MARSSearcher:
     def init(self, mars_url):
         self.mars_url = mars_url
-        self.opener = URLopener()
 
     def get_file_from_mars(self, oid, candid):
         payload = {"candid": candid, "format": "json"}
         resp = requests.get(self.mars_url, params=payload)
-        if resp.status_code is not 200:
+        if resp.status_code != 200:
             raise Exception("Unable to download from MARS")
         resp_json = resp.json()
         self.check_response(resp_json, oid, candid)
-        return resp_json["results"][0]["avro"]
+        with urlopen(resp_json["results"][0]["avro"]) as f:
+            return io.BytesIO(f.read())
 
     def check_response(self, resp, oid, candid):
         assert "results" in resp
