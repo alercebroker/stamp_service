@@ -10,9 +10,7 @@ def format_stamp(stamp, fmt, oid, candid, stype):
         mimetype = "application/fits+gzip"
         fname = f"{basename}.fits.gz"
     elif fmt == "png":
-        max_val, min_val = fits2png.get_max(stamp, window)
-        image_bytes = fits2png.transform(stamp, stype, max_val, min_val)
-        stamp_file = io.BytesIO(image_bytes)
+        stamp_file = io.BytesIO(fits2png.transform(stamp, stype, window))
         mimetype = "image/png"
         fname = f"{basename}.png"
     else:
