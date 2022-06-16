@@ -51,6 +51,13 @@ upload_parser.add_argument(
     "candid", type=int, help="Alert id", location="form", required=True
 )
 upload_parser.add_argument("avro", location="files", type=FileStorage, required=True)
+upload_parser.add_argument(
+    "surveyid",
+    type=str,
+    help="Survey ID",
+    choices=["ztf", "atlas"],
+    required=True,
+)
 
 api = Api(
     version="1.0.0",
