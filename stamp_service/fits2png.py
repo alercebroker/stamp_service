@@ -13,8 +13,8 @@ def _read_compressed_fits(compressed_fits_file):
 def get_max(data, window):
     x = data.shape[0] // 2
     y = data.shape[1] // 2
-    center = data[np.arange(x - window, x + window), :]
-    center = center[:, np.arange(y - window, y + window)]
+    center = data[np.arange(x - window, x + window + 1), :]
+    center = center[:, np.arange(y - window, y + window + 1)]
     max_val = np.max(center)
     min_val = np.min(data) + 0.2 * np.median(np.abs(data - np.median(data)))
 

@@ -11,4 +11,3 @@ boto3==1.24.10
 flask-restx==0.5.1
 python-snappy==0.6.1
 prometheus-flask-exporter>=0.18.1
-
