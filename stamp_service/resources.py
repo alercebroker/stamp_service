@@ -27,10 +27,24 @@ stamp_parser.add_argument(
     choices=["png", "fits"],
     required=True,
 )
+stamp_parser.add_argument(
+    "surveyid",
+    type=str,
+    help="Survey ID",
+    choices=["ztf", "atlas"],
+    default="ztf",
+)
 
 avro_parser = reqparse.RequestParser()
 avro_parser.add_argument("oid", type=str, help="Object ID", required=True)
 avro_parser.add_argument("candid", type=int, help="Alert id", required=True)
+avro_parser.add_argument(
+    "surveyid",
+    type=str,
+    help="Survey ID",
+    choices=["ztf", "atlas"],
+    default="ztf",
+)
 
 upload_parser = reqparse.RequestParser()
 upload_parser.add_argument(
