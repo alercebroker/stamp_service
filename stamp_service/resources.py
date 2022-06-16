@@ -1,3 +1,4 @@
+import copy
 from flask_restx import Resource, reqparse, Api
 from werkzeug.exceptions import NotFound
 from werkzeug.datastructures import FileStorage
@@ -195,10 +196,11 @@ class GetAVROResource(Resource):
             app.logger.info("Uploading Avro from MARS to S3")
             reverse_candid = utils.reverse_candid(args["candid"])
             file_name = "{}.avro".format(reverse_candid)
+            avro_io2 = copy.deepcopy(avro_io)  # Next step closes buffer
             s3_searcher.upload_file(avro_io, file_name)
             file_name = f"{args['candid']}.avro"
             return send_file(
-                avro_io,
+                avro_io2,
                 mimetype="app/avro+binary",
                 download_name=file_name,
                 as_attachment=True,
