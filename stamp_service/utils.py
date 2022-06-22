@@ -50,8 +50,8 @@ def get_configuration_object(config_file_path):
         client = boto3.client("s3")
         # try to donwload the config file yaml_config["remote_file_"]
         client.download_file(
-            yaml_config['remote_file_bucket'],
-            yaml_config['remote_file_name'],
+            yaml_config['remote_config_file_bucket'],
+            yaml_config['remote_config_file_name'],
             'remote_config_file.yml'
         )
         # pendiente probar si se puede usar el diccionario en memoria
