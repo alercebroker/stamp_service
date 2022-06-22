@@ -1,0 +1,14 @@
+---
+remote_file_bucket: ""
+remote_file_path: ""
+test_mode: true
+SERVER_SETTINGS:
+  server_software: ""
+  mars_url: "https://mars.lco.global/"
+  SURVEY_SETTINGS:
+    ztf:
+      id: "ztf"
+      bucket: "test_bucket"
+    atlas:
+      id: "atlas"
+      bucket: ${ATLAS_BUCKET_NAME}

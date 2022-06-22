@@ -2,16 +2,18 @@ from flask import Flask
 from flask_cors import CORS
 from .extensions import prometheus_metrics
 from .callbacks import after_request, before_request
+from .utils import get_configuration_object
 import os
 import logging
 
 
-def create_app(config):
+def create_app(config_path):
     application = Flask(__name__)
-    application.config.from_object(config)
+    config_object = get_configuration_object(config_path)
+    application.config.from_object(config_object)
     CORS(application)
     # Check if app run trough gunicorn
-    is_gunicorn = "gunicorn" in os.environ.get("SERVER_SOFTWARE", "")
+    is_gunicorn = "gunicorn" in application.config["server_software"]
 
     if is_gunicorn:
         prometheus_metrics.init_app(application)
@@ -30,8 +32,8 @@ def create_app(config):
     with application.app_context():
         from .search import s3_searcher, mars_searcher
 
-        s3_searcher.init(bucket_name=os.environ["BUCKET_NAME"])
-        mars_searcher.init(mars_url=os.environ["MARS_URL"])
+        s3_searcher.init(application.config["SURVEY_SETTINGS"]["ztf"]["bucket"])
+        mars_searcher.init(mars_url=application.config["mars_url"])
 
         from .resources import api
 
