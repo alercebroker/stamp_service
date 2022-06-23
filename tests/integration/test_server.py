@@ -6,7 +6,7 @@ import io
 
 FILE_PATH = os.path.dirname(__file__)
 EXAMPLES_PATH = os.path.join(FILE_PATH, "../examples/avro_test")
-CONFIG_FILE_PATH = os.path.join(FILE_PATH, 'test_config.yml')
+CONFIG_FILE_PATH = os.path.join(FILE_PATH, '../unittest/test_config.yml')
 os.environ["AWS_ACCESS_KEY_ID"] = "testing"
 os.environ["AWS_SECRET_ACCESS_KEY"] = "testing"
 os.environ["AWS_SECURITY_TOKEN"] = "testing"
