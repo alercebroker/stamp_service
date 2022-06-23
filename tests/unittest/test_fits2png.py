@@ -11,8 +11,8 @@ class TestGetMaxValueRange(unittest.TestCase):
         data = np.zeros((xsize, ysize))
         window = 1
         max_in, max_out = 1, 5  # Higher outside window
-        data[xsize // 2 + window, ysize // 2 - window] = max_in
-        data[xsize // 2 - window - 1, ysize // 2 - window - 1] = max_out
+        data[xsize // 2, ysize // 2] = max_in
+        data[0, 0] = max_out
 
         vmax, _ = fits2png.get_max(data, window)
         self.assertEqual(max_in, vmax)
