@@ -1,14 +1,13 @@
+import copy
 from flask_restx import Resource, reqparse, Api
 from werkzeug.exceptions import NotFound
 from werkzeug.datastructures import FileStorage
 from . import utils
-from .search import s3_searcher, mars_searcher, disc_searcher
+from .search import s3_searcher, mars_searcher
 from flask import current_app as app
 from flask import send_file, jsonify
-from urllib.request import urlopen
 
 import fastavro
-import os
 
 stamp_parser = reqparse.RequestParser()
 stamp_parser.add_argument("oid", type=str, help="Object ID", required=True)
@@ -55,7 +54,7 @@ class StampResource(Resource):
         # Search in s3
         try:
             data = s3_searcher.get_file_from_s3(args["candid"])
-            data = fastavro.reader(data).next()
+            data = next(fastavro.reader(data))
             data = utils.get_stamp_type(data, args["type"])
             stamp_file, mimetype, fname = utils.format_stamp(
                 data, args["format"], args["oid"], args["candid"], args["type"]
@@ -64,39 +63,15 @@ class StampResource(Resource):
             return send_file(
                 stamp_file,
                 mimetype=mimetype,
-                attachment_filename=fname,
+                download_name=fname,
                 as_attachment=True,
             )
         except FileNotFoundError:
             app.logger.info(f"[MISS] AVRO {args['candid']} not found in S3.")
-        # Search in disc
-        if os.getenv("USE_DISK", False):
-            try:
-                input_directory = utils.oid2dir(
-                    args["oid"], disc_searcher.root_path, disc_searcher.ndisk
-                )
-                file_name = "{}.avro".format(args["candid"])
-                input_path = os.path.join(input_directory, file_name)
-                data = disc_searcher.get_file_from_disc(input_path)
-                data = utils.get_stamp_type(data, args["type"])
-                stamp_file, mimetype, fname = utils.format_stamp(
-                    data, args["format"], args["oid"], args["candid"], args["type"]
-                )
-                return send_file(
-                    stamp_file,
-                    mimetype=mimetype,
-                    attachment_filename=fname,
-                    as_attachment=True,
-                )
-            except FileNotFoundError:
-                app.logger.info(
-                    f"[MISS] AVRO {args['candid']} not found in disc. Searching in MARS"
-                )
         # Search in MARS
         try:
-            avro_file = mars_searcher.get_file_from_mars(args["oid"], args["candid"])
-            avro_io = mars_searcher.opener.open(avro_file)
-            data = fastavro.reader(avro_io).next()
+            avro_io = mars_searcher.get_file_from_mars(args["oid"], args["candid"])
+            data = next(fastavro.reader(avro_io))
             stamp_data = utils.get_stamp_type(data, args["type"])
         except Exception as e:
             app.logger.info(
@@ -111,17 +86,16 @@ class StampResource(Resource):
             )
             reverse_candid = utils.reverse_candid(args["candid"])
             file_name = "{}.avro".format(reverse_candid)
-            s3_searcher.upload_file(urlopen(avro_file), file_name)
+            s3_searcher.upload_file(avro_io, file_name)
             stamp_file, mimetype, fname = utils.format_stamp(
                 stamp_data, args["format"], args["oid"], args["candid"], args["type"]
             )
             return send_file(
                 stamp_file,
                 mimetype=mimetype,
-                attachment_filename=fname,
+                download_name=fname,
                 as_attachment=True,
             )
-            return jsonify(data)
         except Exception as e:
             app.logger.info("Could not upload file to S3")
             raise e
@@ -136,7 +110,7 @@ class GetAVROInfoResource(Resource):
         args = avro_parser.parse_args()
         try:
             data = s3_searcher.get_file_from_s3(args["candid"])
-            data = fastavro.reader(data).next()
+            data = next(fastavro.reader(data))
             del data["cutoutScience"]
             del data["cutoutTemplate"]
             del data["cutoutDifference"]
@@ -146,28 +120,9 @@ class GetAVROInfoResource(Resource):
         except FileNotFoundError:
             app.logger.info(f"[MISS] AVRO {args['candid']} not found in S3.")
 
-        if os.getenv("USE_DISK", False):
-            try:
-                input_directory = utils.oid2dir(
-                    args["oid"], disc_searcher.root_path, disc_searcher.ndisk
-                )
-                file_name = "{}.avro".format(args["candid"])
-                input_path = os.path.join(input_directory, file_name)
-                data = disc_searcher.get_file_from_disc(input_path)
-                del data["cutoutScience"]
-                del data["cutoutTemplate"]
-                del data["cutoutDifference"]
-                app.logger.info(f"[HIT] AVRO {args['candid']} found in disk.")
-                data["candidate"]["candid"] = str(data["candidate"]["candid"])
-                return jsonify(data)
-            except FileNotFoundError:
-                app.logger.info(
-                    f"[MISS] AVRO {args['candid']} not found in disk. Searching in MARS"
-                )
         try:
-            avro_file = mars_searcher.get_file_from_mars(args["oid"], args["candid"])
-            avro_io = mars_searcher.opener.open(avro_file)
-            data = fastavro.reader(avro_io).next()
+            avro_io = mars_searcher.get_file_from_mars(args["oid"], args["candid"])
+            data = next(fastavro.reader(avro_io))
             del data["cutoutScience"]
             del data["cutoutTemplate"]
             del data["cutoutDifference"]
@@ -224,35 +179,14 @@ class GetAVROResource(Resource):
             return send_file(
                 data,
                 mimetype="app/avro+binary",
-                attachment_filename=fname,
+                download_name=fname,
                 as_attachment=True,
             )
         except FileNotFoundError:
             app.logger.info(f"AVRO {args['candid']} not found in S3.")
 
-        if os.getenv("USE_DISK", False):
-            try:
-                input_directory = utils.oid2dir(
-                    args["oid"], disc_searcher.root_path, disc_searcher.ndisk
-                )
-                file_name = "{}.avro".format(args["candid"])
-                input_path = os.path.join(input_directory, file_name)
-                data = disc_searcher.get_raw_file_from_disc(input_path)
-                fname = f"{args['candid']}.avro"
-                app.logger.info(f"[HIT] AVRO {args['candid']} found in disk.")
-                return send_file(
-                    data,
-                    mimetype="app/avro+binary",
-                    attachment_filename=fname,
-                    as_attachment=True,
-                )
-            except FileNotFoundError:
-                app.logger.info(
-                    f"AVRO {args['candid']} not found in disc. Searching in MARS"
-                )
         try:
-            avro_file = mars_searcher.get_file_from_mars(args["oid"], args["candid"])
-            avro_io = mars_searcher.opener.open(avro_file)
+            avro_io = mars_searcher.get_file_from_mars(args["oid"], args["candid"])
             app.logger.info(f"[HIT] AVRO {args['candid']} found in MARS")
         except Exception as e:
             app.logger.info("File could not be retreived from MARS.")
@@ -262,12 +196,13 @@ class GetAVROResource(Resource):
             app.logger.info("Uploading Avro from MARS to S3")
             reverse_candid = utils.reverse_candid(args["candid"])
             file_name = "{}.avro".format(reverse_candid)
+            avro_io2 = copy.deepcopy(avro_io)  # Next step closes buffer
             s3_searcher.upload_file(avro_io, file_name)
             file_name = f"{args['candid']}.avro"
             return send_file(
-                avro_io,
+                avro_io2,
                 mimetype="app/avro+binary",
-                attachment_filename=file_name,
+                download_name=file_name,
                 as_attachment=True,
             )
         except Exception as e:

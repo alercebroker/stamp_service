@@ -5,6 +5,7 @@ from .callbacks import after_request, before_request
 import os
 import logging
 
+
 def create_app(config):
     application = Flask(__name__)
     application.config.from_object(config)
@@ -27,16 +28,10 @@ def create_app(config):
         return after_request(response, application.logger)
 
     with application.app_context():
-        from .search import s3_searcher, mars_searcher, disc_searcher
+        from .search import s3_searcher, mars_searcher
 
         s3_searcher.init(bucket_name=os.environ["BUCKET_NAME"])
         mars_searcher.init(mars_url=os.environ["MARS_URL"])
-        if os.getenv("USE_DISK", False):
-            disc_searcher.init(
-                root_path=os.environ["ROOT_PATH"], ndisk=os.environ["NDISK"]
-            )
-        else:
-            disc_searcher = None
 
         from .resources import api
 

@@ -11,14 +11,6 @@ class TestUtils(unittest.TestCase):
         n = utils.reverse_candid("123456")
         self.assertEqual(n, "654321")
 
-    def test_oid2dir(self):
-        oid = "ZTF20abc"
-        root = "root"
-        ndisk = 8
-        os.environ["TEST_MODE"] = "True"  # Test mode ignores ndisk
-        path = utils.oid2dir(oid, root, ndisk)
-        self.assertEqual(path, "root/ZTF20/a/b/c")
-
     def test_get_stamp_type(self):
         avro = {
             "cutoutScience": {"stampData": "science"},

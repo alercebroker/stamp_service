@@ -1,6 +1,6 @@
 import unittest
 from unittest import mock
-from stamp_service.search import S3Searcher, DiscSearcher, MARSSearcher, boto3, io
+from stamp_service.search import S3Searcher, MARSSearcher, boto3, io
 from moto import mock_s3
 import os
 
@@ -63,13 +63,13 @@ class TestMARSSearcher(unittest.TestCase):
 
     @mock.patch("requests.get")
     @mock.patch.object(MARSSearcher, "check_response")
-    @mock.patch("stamp_service.search.URLopener.open")
+    @mock.patch("stamp_service.search.urlopen")
     def test_get_file_from_mars(self, mock_open, mock_check_response, mock_get):
         mock_get.return_value.json.return_value = {"results": [{"avro": "avro"}]}
-        mock_open.return_value = "avro"
+        mock_open.return_value.__enter__.return_value.read.return_value = b"avro"
         mock_get.return_value.status_code = 200
         resp = self.searcher.get_file_from_mars("oid", 123)
-        self.assertEqual(resp, "avro")
+        self.assertIsInstance(resp, io.BytesIO)
 
     def test_check_response(self):
         resp = {

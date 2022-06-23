@@ -1,6 +1,5 @@
-from flask import Flask, request, g
-from time import strftime, time
-import traceback
+from flask import request, g
+from time import time
 
 
 def before_request():
@@ -21,17 +20,3 @@ def after_request(response, logger):
         elapsed,
     )
     return response
-
-
-def exceptions(e, logger):
-    tb = traceback.format_exc()
-    timestamp = strftime("[%Y-%b-%d %H:%M]")
-    logger.error(
-        "%s %s %s %s ERROR\n%s",
-        request.remote_addr,
-        request.method,
-        request.scheme,
-        request.full_path,
-        tb,
-    )
-    return e.status_code
