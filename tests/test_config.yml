@@ -8,7 +8,7 @@ SERVER_SETTINGS:
   SURVEY_SETTINGS:
     ztf:
       id: "ztf"
-      bucket: "test_ztf_bucket"
+      bucket: "test_bucket"
     atlas:
       id: "atlas"
-      bucket: "test_atlas_bucket"
+      bucket: "test_bucket"
