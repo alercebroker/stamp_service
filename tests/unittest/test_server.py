@@ -4,6 +4,7 @@ import os
 
 FILE_PATH = os.path.dirname(__file__)
 EXAMPLES_PATH = os.path.join(FILE_PATH, "../examples/avro_test")
+CONFIG_FILE_PATH = os.path.join(FILE_PATH, 'test_config.yml')
 os.environ["BUCKET_NAME"] = "test_bucket"
 os.environ["MARS_URL"] = "test_url"
 os.environ["TEST_MODE"] = "True"
@@ -13,7 +14,7 @@ import io
 
 class TestStampResource(unittest.TestCase):
     def setUp(self):
-        application = create_app({})
+        application = create_app(CONFIG_FILE_PATH)
         application.config["TESTING"] = True
         with application.test_client() as client:
             self.client = client
@@ -62,7 +63,7 @@ class TestStampResource(unittest.TestCase):
 
 class TestAVROInfoResource(unittest.TestCase):
     def setUp(self):
-        application = create_app({})
+        application = create_app(CONFIG_FILE_PATH)
         application.config["TESTING"] = True
         with application.test_client() as client:
             self.client = client
@@ -130,7 +131,7 @@ class TestAVROInfoResource(unittest.TestCase):
 
 class TestPutAVROResource(unittest.TestCase):
     def setUp(self):
-        application = create_app({})
+        application = create_app(CONFIG_FILE_PATH)
         application.config["TESTING"] = True
         with application.test_client() as client:
             self.client = client
@@ -153,7 +154,7 @@ class TestPutAVROResource(unittest.TestCase):
 
 class TestAVROResource(unittest.TestCase):
     def setUp(self):
-        application = create_app({})
+        application = create_app(CONFIG_FILE_PATH)
         application.config["TESTING"] = True
         with application.test_client() as client:
             self.client = client

@@ -18,7 +18,7 @@ import boto3
 class TestStampResource(VCRTestCase):
     def setUp(self):
         super().setUp()
-        self.application = create_app("../test_config.yml")
+        self.application = create_app("test/test_config.yml")
         with self.application.test_client() as client:
             self.application.config["TESTING"] = True
             self.test_client = client
