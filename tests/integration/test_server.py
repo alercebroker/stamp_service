@@ -1,24 +1,19 @@
 from vcr_unittest import VCRTestCase
-from unittest import mock, TestCase
+from unittest import mock
 from moto import mock_s3
 import os
 import io
-import logging
 
 FILE_PATH = os.path.dirname(__file__)
 EXAMPLES_PATH = os.path.join(FILE_PATH, "../examples/avro_test")
 os.environ["BUCKET_NAME"] = "test_bucket"
 os.environ["MARS_URL"] = "https://mars.lco.global/"
-os.environ["USE_DISK"] = "True"
-os.environ["ROOT_PATH"] = EXAMPLES_PATH
-os.environ["NDISK"] = "1"
 os.environ["TEST_MODE"] = "True"
 os.environ["AWS_ACCESS_KEY_ID"] = "testing"
 os.environ["AWS_SECRET_ACCESS_KEY"] = "testing"
 os.environ["AWS_SECURITY_TOKEN"] = "testing"
 os.environ["AWS_SESSION_TOKEN"] = "testing"
 from stamp_service.server import create_app
-from stamp_service.resources import NotFound
 import boto3
 
 
@@ -77,19 +72,7 @@ class TestStampResource(VCRTestCase):
         rv = self.test_client.get("/get_stamp", query_string=args)
         self.assertEqual(rv.status, "200 OK")
 
-    def test_get_stamp_disc(self):
-        args = {
-            "oid": "ZTF18acuwwpp",
-            "candid": 820128985515010010,
-            "type": "science",
-            "format": "png",
-        }
-        rv = self.test_client.get("/get_stamp", query_string=args)
-        self.assertEqual(rv.status, "200 OK")
-
-    @mock.patch("stamp_service.resources.disc_searcher.get_file_from_disc")
-    def test_get_stamp_mars(self, get_file_from_disc):
-        get_file_from_disc.side_effect = FileNotFoundError
+    def test_get_stamp_mars(self):
         client = boto3.client("s3")
         args = {
             "oid": "ZTF18acuwwpp",
@@ -156,19 +139,7 @@ class TestAvroInfoResource(VCRTestCase):
         rv = self.test_client.get("/get_avro_info", query_string=args)
         self.assertEqual(rv.status, "200 OK")
 
-    def test_get_avro_info_disc(self):
-        args = {
-            "oid": "ZTF18acuwwpp",
-            "candid": 820128985515010010,
-            "type": "science",
-            "format": "png",
-        }
-        rv = self.test_client.get("/get_avro_info", query_string=args)
-        self.assertEqual(rv.status, "200 OK")
-
-    @mock.patch("stamp_service.resources.disc_searcher.get_file_from_disc")
-    def test_get_avro_info_mars(self, get_file_from_disc):
-        get_file_from_disc.side_effect = FileNotFoundError
+    def test_get_avro_info_mars(self):
         client = boto3.client("s3")
         args = {
             "oid": "ZTF18acuwwpp",
@@ -269,20 +240,7 @@ class TestAvroResource(VCRTestCase):
         io.BytesIO(rv.data)
         self.assertEqual(rv.status, "200 OK")
 
-    def test_get_avro_disc(self):
-        args = {
-            "oid": "ZTF18acuwwpp",
-            "candid": 820128985515010010,
-            "type": "science",
-            "format": "png",
-        }
-        rv = self.test_client.get("/get_avro", query_string=args)
-        io.BytesIO(rv.data)
-        self.assertEqual(rv.status, "200 OK")
-
-    @mock.patch("stamp_service.resources.disc_searcher.get_raw_file_from_disc")
-    def test_get_avro_mars(self, get_file_from_disc):
-        get_file_from_disc.side_effect = FileNotFoundError
+    def test_get_avro_mars(self):
         client = boto3.client("s3")
         args = {
             "oid": "ZTF18acuwwpp",
