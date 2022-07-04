@@ -41,23 +41,3 @@ def reverse_candid(candid):
         original candid to be reversed
     """
     return str(candid)[::-1]
-
-def get_configuration_object(config_file_path):
-
-    yaml_config = EnvYAML(config_file_path)
-    try:
-        import boto3
-        client = boto3.client("s3")
-        # try to donwload the config file yaml_config["remote_file_"]
-        client.download_file(
-            yaml_config['remote_config_file_bucket'],
-            yaml_config['remote_config_file_name'],
-            'remote_config_file.yml'
-        )
-        # pendiente probar si se puede usar el diccionario en memoria
-        remote_yaml_config = EnvYAML('remote_config_file.yml')
-        return remote_yaml_config['SERVER_SETTINGS']
-    except Exception as e:
-        # if cant be downloaded and loaded use the rest of the local file
-        print(f"error {repr(e)}") # use logger
-        return yaml_config['SERVER_SETTINGS']
