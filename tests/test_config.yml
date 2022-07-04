@@ -1,6 +1,4 @@
 ---
-remote_file_bucket: ""
-remote_file_path: ""
 test_mode: true
 SERVER_SETTINGS:
   server_software: ""

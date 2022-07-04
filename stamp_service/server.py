@@ -1,8 +1,8 @@
 from flask import Flask
 from flask_cors import CORS
 from .callbacks import after_request, before_request
-import os
-import logging
+from .utils import set_logger
+from .extensions import set_prometheus_metrics
 from envyaml import EnvYAML
 
 
@@ -11,15 +11,9 @@ def create_app(config_path):
     config_dict = EnvYAML(config_path)
     application.config["SERVER_SETTINGS"] = config_dict['SERVER_SETTINGS']
     CORS(application)
-    # Check if app run trough gunicorn
-    is_gunicorn = "gunicorn" in application.config["SERVER_SETTINGS"]["server_software"]
-    
-    if is_gunicorn:
-        from .extensions import prometheus_metrics
-        prometheus_metrics.init_app(application)
-        gunicorn_logger = logging.getLogger("gunicorn.error")
-        application.logger.handlers = gunicorn_logger.handlers
-        application.logger.setLevel(gunicorn_logger.level)
+
+    set_prometheus_metrics(application)
+    set_logger(application)
 
     @application.before_request
     def beforerequest():
