@@ -1,6 +1,4 @@
 ---
-remote_config_file_bucket: ${REMOTE_CONFIG_FILE_BUCKET}
-remote_config_file_name: ${REMOTE_CONFIG_FILE_NAME}
 test_mode: false
 SERVER_SETTINGS:
   server_software: ${SERVER_SOFTWARE}
