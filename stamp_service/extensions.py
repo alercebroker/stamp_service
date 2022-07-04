@@ -2,10 +2,10 @@ from prometheus_flask_exporter.multiprocess import GunicornInternalPrometheusMet
 from prometheus_flask_exporter import PrometheusMetrics
 
 def set_prometheus_metrics(app):
-    from flask import current_app
-
-    is_gunicorn = "gunicorn" in current_app.config["SERVER_SETTINGS"]["server_software"]
+    is_gunicorn = "gunicorn" in app.config["SERVER_SETTINGS"]["server_software"]
     if is_gunicorn:
-        return GunicornInternalPrometheusMetrics.for_app_factory()
+        prometheus_metrics = GunicornInternalPrometheusMetrics.for_app_factory()
     else:
-        return PrometheusMetrics.for_app_factory()
+        prometheus_metrics = PrometheusMetrics.for_app_factory()
+    
+    prometheus_metrics.init_app(app)

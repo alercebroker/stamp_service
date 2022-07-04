@@ -3,8 +3,7 @@ import logging
 from . import fits2png
 
 def set_logger(app):
-    from flask import current_app
-    if "gunicorn" in current_app.config["SERVER_SETTINGS"]["server_software"]:
+    if "gunicorn" in app.config["SERVER_SETTINGS"]["server_software"]:
         gunicorn_logger = logging.getLogger("gunicorn.error")
         app.logger.handlers = gunicorn_logger.handlers
         app.logger.setLevel(gunicorn_logger.level)
