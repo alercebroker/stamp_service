@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main
-      - feat/change_how_settings_work
 
 jobs:
   get_tags:
