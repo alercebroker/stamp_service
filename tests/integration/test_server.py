@@ -6,9 +6,7 @@ import io
 
 FILE_PATH = os.path.dirname(__file__)
 EXAMPLES_PATH = os.path.join(FILE_PATH, "../examples/avro_test")
-os.environ["BUCKET_NAME"] = "test_bucket"
-os.environ["MARS_URL"] = "https://mars.lco.global/"
-os.environ["TEST_MODE"] = "True"
+CONFIG_FILE_PATH = os.path.join(FILE_PATH, '../test_config.yml')
 os.environ["AWS_ACCESS_KEY_ID"] = "testing"
 os.environ["AWS_SECRET_ACCESS_KEY"] = "testing"
 os.environ["AWS_SECURITY_TOKEN"] = "testing"
@@ -21,7 +19,7 @@ import boto3
 class TestStampResource(VCRTestCase):
     def setUp(self):
         super().setUp()
-        self.application = create_app({})
+        self.application = create_app(CONFIG_FILE_PATH)
         with self.application.test_client() as client:
             self.application.config["TESTING"] = True
             self.test_client = client
@@ -103,7 +101,7 @@ class TestStampResource(VCRTestCase):
 class TestAvroInfoResource(VCRTestCase):
     def setUp(self):
         super().setUp()
-        self.application = create_app({})
+        self.application = create_app(CONFIG_FILE_PATH)
         with self.application.test_client() as client:
             self.application.config["TESTING"] = True
             self.test_client = client
@@ -170,7 +168,7 @@ class TestAvroInfoResource(VCRTestCase):
 class TestPutAvroResource(VCRTestCase):
     def setUp(self):
         super().setUp()
-        self.application = create_app({})
+        self.application = create_app(CONFIG_FILE_PATH)
         with self.application.test_client() as client:
             self.application.config["TESTING"] = True
             self.test_client = client
@@ -203,7 +201,7 @@ class TestPutAvroResource(VCRTestCase):
 class TestAvroResource(VCRTestCase):
     def setUp(self):
         super().setUp()
-        self.application = create_app({})
+        self.application = create_app(CONFIG_FILE_PATH)
         with self.application.test_client() as client:
             self.application.config["TESTING"] = True
             self.test_client = client

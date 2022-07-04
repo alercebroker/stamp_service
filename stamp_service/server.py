@@ -1,23 +1,19 @@
 from flask import Flask
 from flask_cors import CORS
-from .extensions import prometheus_metrics
 from .callbacks import after_request, before_request
-import os
-import logging
+from .utils import set_logger
+from .extensions import set_prometheus_metrics
+from envyaml import EnvYAML
 
 
-def create_app(config):
+def create_app(config_path):
     application = Flask(__name__)
-    application.config.from_object(config)
+    config_dict = EnvYAML(config_path)
+    application.config["SERVER_SETTINGS"] = config_dict['SERVER_SETTINGS']
     CORS(application)
-    # Check if app run trough gunicorn
-    is_gunicorn = "gunicorn" in os.environ.get("SERVER_SOFTWARE", "")
 
-    if is_gunicorn:
-        prometheus_metrics.init_app(application)
-        gunicorn_logger = logging.getLogger("gunicorn.error")
-        application.logger.handlers = gunicorn_logger.handlers
-        application.logger.setLevel(gunicorn_logger.level)
+    set_prometheus_metrics(application)
+    set_logger(application)
 
     @application.before_request
     def beforerequest():
@@ -30,8 +26,8 @@ def create_app(config):
     with application.app_context():
         from .search import s3_searcher, mars_searcher
 
-        s3_searcher.init(bucket_name=os.environ["BUCKET_NAME"])
-        mars_searcher.init(mars_url=os.environ["MARS_URL"])
+        s3_searcher.init(application.config["SERVER_SETTINGS"]["SURVEY_SETTINGS"]["ztf"]["bucket"])
+        mars_searcher.init(mars_url=application.config["SERVER_SETTINGS"]["mars_url"])
 
         from .resources import api
 

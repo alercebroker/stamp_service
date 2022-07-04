@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main
-      - devop/build_image
 
 jobs:
   get_tags:
