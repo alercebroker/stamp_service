@@ -1,7 +1,6 @@
 from flask import Flask
 from flask_cors import CORS
 from .callbacks import after_request, before_request
-from .utils import get_configuration_object
 import os
 import logging
 from envyaml import EnvYAML
@@ -11,7 +10,6 @@ def create_app(config_path):
     application = Flask(__name__)
     config_dict = yaml_config = EnvYAML(config_path)
     application.config["SERVER_SETTINGS"] = config_dict['SERVER_SETTINGS']
-
     CORS(application)
     # Check if app run trough gunicorn
     is_gunicorn = "gunicorn" in application.config["SERVER_SETTINGS"]["server_software"]
