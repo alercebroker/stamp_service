@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - main
-      - devop/build_image
+      - feat/change_how_settings_work
 
 jobs:
   get_tags:
