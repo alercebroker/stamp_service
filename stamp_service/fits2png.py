@@ -7,7 +7,7 @@ import numpy as np
 
 def _read_compressed_fits(compressed_fits_file):
     fits = io.BytesIO(compressed_fits_file)
-    return fio.open(gzip.open(fits))[0]
+    return fio.open(fits)[0]
 
 
 def get_max(data, window):
