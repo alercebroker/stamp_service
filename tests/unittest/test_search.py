@@ -44,7 +44,7 @@ class TestS3Searcher(unittest.TestCase):
             self.client.upload_fileobj(avro, bucket, object_name_reversed)
 
     def test_get_file_from_s3(self):
-        candid = 820128985515010010
+        candid = "820128985515010010"
         file = self.searcher.get_file_from_s3(candid, 'ztf')
         self.assertIsInstance(file, io.BytesIO)
 
