@@ -134,9 +134,9 @@ class GetAVROInfoResource(Resource):
             data = s3_searcher.get_file_from_s3(args["candid"], args['survey_id'])
             data = next(fastavro.reader(data))
             if args['survey_id'] == "ztf":
-                del data["cutoutScience"]
-                del data["cutoutTemplate"]
-                del data["cutoutDifference"]
+                del data["cutoutTemplate"] # este atlas no lo tiene
+            del data["cutoutScience"]
+            del data["cutoutDifference"]
             app.logger.info(f"[HIT] AVRO {args['candid']} found in S3.")
             data["candidate"]["candid"] = str(data["candidate"]["candid"])
             return jsonify(data)
