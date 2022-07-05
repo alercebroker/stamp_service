@@ -12,7 +12,7 @@ import fastavro
 
 stamp_parser = reqparse.RequestParser()
 stamp_parser.add_argument("oid", type=str, help="Object ID", required=True)
-stamp_parser.add_argument("candid", type=int, help="Alert id", required=True)
+stamp_parser.add_argument("candid", type=str, help="Alert id", required=True)
 stamp_parser.add_argument(
     "type",
     type=str,
@@ -37,7 +37,7 @@ stamp_parser.add_argument(
 
 avro_parser = reqparse.RequestParser()
 avro_parser.add_argument("oid", type=str, help="Object ID", required=True)
-avro_parser.add_argument("candid", type=int, help="Alert id", required=True)
+avro_parser.add_argument("candid", type=str, help="Alert id", required=True)
 avro_parser.add_argument(
     "survey_id",
     type=str,
@@ -48,7 +48,7 @@ avro_parser.add_argument(
 
 upload_parser = reqparse.RequestParser()
 upload_parser.add_argument(
-    "candid", type=int, help="Alert id", location="form", required=True
+    "candid", type=str, help="Alert id", location="form", required=True
 )
 upload_parser.add_argument("avro", location="files", type=FileStorage, required=True)
 upload_parser.add_argument(

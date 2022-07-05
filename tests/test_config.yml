@@ -9,4 +9,4 @@ SERVER_SETTINGS:
       bucket: "test_bucket"
     atlas:
       id: "atlas"
-      bucket: "test_bucket"
+      bucket: "atlas_test_bucket"
