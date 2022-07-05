@@ -1,3 +1,4 @@
+from ast import arg
 import copy
 from flask_restx import Resource, reqparse, Api
 from werkzeug.exceptions import NotFound
@@ -27,7 +28,7 @@ stamp_parser.add_argument(
     required=True,
 )
 stamp_parser.add_argument(
-    "surveyid",
+    "survey_id",
     type=str,
     help="Survey ID",
     choices=["ztf", "atlas"],
@@ -38,7 +39,7 @@ avro_parser = reqparse.RequestParser()
 avro_parser.add_argument("oid", type=str, help="Object ID", required=True)
 avro_parser.add_argument("candid", type=int, help="Alert id", required=True)
 avro_parser.add_argument(
-    "surveyid",
+    "survey_id",
     type=str,
     help="Survey ID",
     choices=["ztf", "atlas"],
@@ -51,7 +52,7 @@ upload_parser.add_argument(
 )
 upload_parser.add_argument("avro", location="files", type=FileStorage, required=True)
 upload_parser.add_argument(
-    "surveyid",
+    "survey_id",
     type=str,
     help="Survey ID",
     choices=["ztf", "atlas"],
@@ -74,7 +75,7 @@ class StampResource(Resource):
         args = stamp_parser.parse_args()
         # Search in s3
         try:
-            data = s3_searcher.get_file_from_s3(args["candid"])
+            data = s3_searcher.get_file_from_s3(args["candid"], args['survey_id'])
             data = next(fastavro.reader(data))
             data = utils.get_stamp_type(data, args["type"])
             stamp_file, mimetype, fname = utils.format_stamp(
@@ -107,7 +108,7 @@ class StampResource(Resource):
             )
             reverse_candid = utils.reverse_candid(args["candid"])
             file_name = "{}.avro".format(reverse_candid)
-            s3_searcher.upload_file(avro_io, file_name)
+            s3_searcher.upload_file(avro_io, file_name, args['survey_id'])
             stamp_file, mimetype, fname = utils.format_stamp(
                 stamp_data, args["format"], args["oid"], args["candid"], args["type"]
             )
@@ -130,7 +131,7 @@ class GetAVROInfoResource(Resource):
     def get(self):
         args = avro_parser.parse_args()
         try:
-            data = s3_searcher.get_file_from_s3(args["candid"])
+            data = s3_searcher.get_file_from_s3(args["candid"], args['survey_id'])
             data = next(fastavro.reader(data))
             del data["cutoutScience"]
             del data["cutoutTemplate"]
@@ -157,7 +158,7 @@ class GetAVROInfoResource(Resource):
             app.logger.info("Uploading Avro from MARS to S3")
             reverse_candid = utils.reverse_candid(args["candid"])
             file_name = "{}.avro".format(reverse_candid)
-            s3_searcher.upload_file(avro_io, file_name)
+            s3_searcher.upload_file(avro_io, file_name, args['survey_id'])
             data["candidate"]["candid"] = str(data["candidate"]["candid"])
             return jsonify(data)
         except Exception as e:
@@ -174,11 +175,11 @@ class PutAVROResource(Resource):
         reverse_candid = utils.reverse_candid(args["candid"])
         file_name = "{}.avro".format(reverse_candid)
         app.logger.info(
-            "Saving on s3://{}/{}".format(s3_searcher.bucket_name, file_name)
+            "Saving on s3://{}/{}".format(s3_searcher.buckets_dict[args['survey_id']]['bucket'], file_name)
         )
         f = args["avro"]
         try:
-            response = s3_searcher.upload_file(f, object_name=file_name)
+            response = s3_searcher.upload_file(f, object_name=file_name, survey_id=args['survey_id'])
             return jsonify(response)
         except Exception as e:
             app.logger.info("Could not upload file to S3")
@@ -194,7 +195,7 @@ class GetAVROResource(Resource):
     def get(self):
         args = avro_parser.parse_args()
         try:
-            data = s3_searcher.get_file_from_s3(args["candid"])
+            data = s3_searcher.get_file_from_s3(args["candid"], args['survey_id'])
             fname = f"{args['candid']}.avro"
             app.logger.info(f"[HIT] AVRO {args['candid']} found in S3")
             return send_file(
@@ -218,7 +219,7 @@ class GetAVROResource(Resource):
             reverse_candid = utils.reverse_candid(args["candid"])
             file_name = "{}.avro".format(reverse_candid)
             avro_io2 = copy.deepcopy(avro_io)  # Next step closes buffer
-            s3_searcher.upload_file(avro_io, file_name)
+            s3_searcher.upload_file(avro_io, file_name, args['survey_id'])
             file_name = f"{args['candid']}.avro"
             return send_file(
                 avro_io2,

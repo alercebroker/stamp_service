@@ -8,16 +8,20 @@ from urllib.request import urlopen
 
 
 class S3Searcher:
-    def init(self, bucket_name, client=None):
-        self.client = client or boto3.client("s3")
-        self.bucket_name = bucket_name
 
-    def get_file_from_s3(self, candid):
+    buckets_dict = {}
+
+    def init(self, bucket_config, client=None):
+        self.client = client or boto3.client("s3")
+        self.buckets_dict = bucket_config
+
+    def get_file_from_s3(self, candid, survey_id):
         reverse_candid = utils.reverse_candid(candid)
         file_name = f"{reverse_candid}.avro"
+        bucket_name = self.buckets_dict[survey_id]['bucket']
         try:
             # self.client.download_fileobj(self.bucket_name, file_name, avro_file)
-            f = self.client.get_object(Bucket=self.bucket_name, Key=file_name)[
+            f = self.client.get_object(Bucket=bucket_name, Key=file_name)[
                 "Body"
             ].read()
             avro_file = io.BytesIO(f)
@@ -32,14 +36,15 @@ class S3Searcher:
                 print()
                 raise Exception(e)
 
-    def upload_file(self, file_name, object_name):
+    def upload_file(self, file_name, object_name, survey_id):
         """Upload a file to an S3 bucket
 
         :param file_name: File to upload
         :param bucket: Bucket to upload to
         :param object_name: S3 object name. If not specified then file_name is used
         """
-        return self.client.upload_fileobj(file_name, self.bucket_name, object_name)
+        bucket_name = self.buckets_dict[survey_id]['bucket']
+        return self.client.upload_fileobj(file_name, bucket_name, object_name)
 
 
 class MARSSearcher:

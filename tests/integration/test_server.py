@@ -188,7 +188,7 @@ class TestPutAvroResource(VCRTestCase):
         self.assertNotIn("Contents", objs)
         rv = self.test_client.post(
             "/put_avro",
-            data={"avro": (io.BytesIO(b"data"), "avro.avro"), "candid": 123, 'surveyid': 'ztf'},
+            data={"avro": (io.BytesIO(b"data"), "avro.avro"), "candid": 123, 'survey_id': 'ztf'},
             follow_redirects=True,
             content_type="multipart/form-data",
         )
