@@ -145,7 +145,7 @@ class TestPutAVROResource(unittest.TestCase):
         jsonify.return_value = "ok"
         rv = self.client.post(
             "/put_avro",
-            data={"avro": (io.BytesIO(b"data"), "avro.avro"), "candid": 123},
+            data={"avro": (io.BytesIO(b"data"), "avro.avro"), "candid": 123, 'surveyid': 'ztf'},
             follow_redirects=True,
             content_type="multipart/form-data",
         )
