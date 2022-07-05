@@ -6,11 +6,11 @@ import numpy as np
 
 
 def _read_compressed_fits(compressed_fits_file):
-    fits = io.BytesIO(compressed_fits_file)
     try:
+        fits = io.BytesIO(compressed_fits_file)
         return fio.open(gzip.open(fits))[0]
     except Exception as e:
-        # log the error
+        fits = io.BytesIO(compressed_fits_file)
         return fio.open(fits)[0]
 
 
