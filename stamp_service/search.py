@@ -52,7 +52,7 @@ class MARSSearcher:
         self.mars_url = mars_url
 
     def get_file_from_mars(self, oid, candid):
-        payload = {"candid": candid, "format": "json"}
+        payload = {"candid": int(candid), "format": "json"}
         resp = requests.get(self.mars_url, params=payload)
         if resp.status_code != 200:
             raise Exception("Unable to download from MARS")
