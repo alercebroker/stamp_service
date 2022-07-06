@@ -9,8 +9,6 @@ from urllib.request import urlopen
 
 class S3Searcher:
 
-    buckets_dict = {}
-
     def init(self, bucket_config, client=None):
         self.client = client or boto3.client("s3")
         self.buckets_dict = bucket_config
