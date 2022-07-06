@@ -92,7 +92,7 @@ class StampResource(Resource):
             app.logger.info(f"[MISS] AVRO {args['candid']} not found in S3.")
         # Search in MARS
         try:
-            avro_io = mars_searcher.get_file_from_mars(args["oid"], args["candid"])
+            avro_io = mars_searcher.get_file_from_mars(args["oid"], int(args["candid"]))
             data = next(fastavro.reader(avro_io))
             stamp_data = utils.get_stamp_type(data, args["type"])
         except Exception as e:
@@ -144,7 +144,7 @@ class GetAVROInfoResource(Resource):
             app.logger.info(f"[MISS] AVRO {args['candid']} not found in S3.")
 
         try:
-            avro_io = mars_searcher.get_file_from_mars(args["oid"], args["candid"])
+            avro_io = mars_searcher.get_file_from_mars(args["oid"], int(args["candid"]))
             data = next(fastavro.reader(avro_io))
             del data["cutoutScience"]
             del data["cutoutTemplate"]
@@ -209,7 +209,7 @@ class GetAVROResource(Resource):
             app.logger.info(f"AVRO {args['candid']} not found in S3.")
 
         try:
-            avro_io = mars_searcher.get_file_from_mars(args["oid"], args["candid"])
+            avro_io = mars_searcher.get_file_from_mars(args["oid"], int(args["candid"]))
             app.logger.info(f"[HIT] AVRO {args['candid']} found in MARS")
         except Exception as e:
             app.logger.info("File could not be retreived from MARS.")

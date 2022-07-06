@@ -9,7 +9,7 @@ def _read_compressed_fits(compressed_fits_file):
     try:
         fits = io.BytesIO(compressed_fits_file)
         return fio.open(gzip.open(fits))[0]
-    except Exception as e:
+    except OSError:
         fits = io.BytesIO(compressed_fits_file)
         return fio.open(fits)[0]
 
