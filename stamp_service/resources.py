@@ -90,37 +90,39 @@ class StampResource(Resource):
             )
         except FileNotFoundError:
             app.logger.info(f"[MISS] AVRO {args['candid']} not found in S3.")
-        # Search in MARS
-        try:
-            avro_io = mars_searcher.get_file_from_mars(args["oid"], int(args["candid"]))
-            data = next(fastavro.reader(avro_io))
-            stamp_data = utils.get_stamp_type(data, args["type"])
-        except Exception as e:
-            app.logger.info(
-                f"[MISS] AVRO {args['candid']} could not be retrieved from MARS."
-            )
-            raise NotFound("AVRO not found")
+        
+        if args['survey_id'] == "ztf":
+            # Search in MARS
+            try:
+                avro_io = mars_searcher.get_file_from_mars(args["oid"], int(args["candid"]))
+                data = next(fastavro.reader(avro_io))
+                stamp_data = utils.get_stamp_type(data, args["type"])
+            except Exception as e:
+                app.logger.info(
+                    f"[MISS] AVRO {args['candid']} could not be retrieved from MARS."
+                )
+                raise NotFound("AVRO not found")
 
-        # Upload to S3 from MARS
-        try:
-            app.logger.info(
-                f"[HIT] AVRO {args['candid']} found in MARS. Uploading from MARS to S3"
-            )
-            reverse_candid = utils.reverse_candid(args["candid"])
-            file_name = "{}.avro".format(reverse_candid)
-            s3_searcher.upload_file(avro_io, file_name, args['survey_id'])
-            stamp_file, mimetype, fname = utils.format_stamp(
-                stamp_data, args["format"], args["oid"], args["candid"], args["type"]
-            )
-            return send_file(
-                stamp_file,
-                mimetype=mimetype,
-                download_name=fname,
-                as_attachment=True,
-            )
-        except Exception as e:
-            app.logger.info("Could not upload file to S3")
-            raise e
+            # Upload to S3 from MARS
+            try:
+                app.logger.info(
+                    f"[HIT] AVRO {args['candid']} found in MARS. Uploading from MARS to S3"
+                )
+                reverse_candid = utils.reverse_candid(args["candid"])
+                file_name = "{}.avro".format(reverse_candid)
+                s3_searcher.upload_file(avro_io, file_name, args['survey_id'])
+                stamp_file, mimetype, fname = utils.format_stamp(
+                    stamp_data, args["format"], args["oid"], args["candid"], args["type"]
+                )
+                return send_file(
+                    stamp_file,
+                    mimetype=mimetype,
+                    download_name=fname,
+                    as_attachment=True,
+                )
+            except Exception as e:
+                app.logger.info("Could not upload file to S3")
+                raise e
 
 
 @api.route("/get_avro_info")
@@ -142,28 +144,30 @@ class GetAVROInfoResource(Resource):
             return jsonify(data)
         except FileNotFoundError:
             app.logger.info(f"[MISS] AVRO {args['candid']} not found in S3.")
+        
 
-        try:
-            avro_io = mars_searcher.get_file_from_mars(args["oid"], int(args["candid"]))
-            data = next(fastavro.reader(avro_io))
-            del data["cutoutScience"]
-            del data["cutoutTemplate"]
-            del data["cutoutDifference"]
-        except Exception as e:
-            app.logger.info(
-                f"[MISS] AVRO {args['candid']} could not be retrieved from MARS."
-            )
-            app.logger.error(f"Error: {e}")
-            raise NotFound("AVRO not found")
-        try:
-            app.logger.info("Uploading Avro from MARS to S3")
-            reverse_candid = utils.reverse_candid(args["candid"])
-            file_name = "{}.avro".format(reverse_candid)
-            s3_searcher.upload_file(avro_io, file_name, args['survey_id'])
-            data["candidate"]["candid"] = str(data["candidate"]["candid"])
-            return jsonify(data)
-        except Exception as e:
-            raise e
+        if args['survey_id'] == "ztf":
+            try:
+                avro_io = mars_searcher.get_file_from_mars(args["oid"], int(args["candid"]))
+                data = next(fastavro.reader(avro_io))
+                del data["cutoutScience"]
+                del data["cutoutTemplate"]
+                del data["cutoutDifference"]
+            except Exception as e:
+                app.logger.info(
+                    f"[MISS] AVRO {args['candid']} could not be retrieved from MARS."
+                )
+                app.logger.error(f"Error: {e}")
+                raise NotFound("AVRO not found")
+            try:
+                app.logger.info("Uploading Avro from MARS to S3")
+                reverse_candid = utils.reverse_candid(args["candid"])
+                file_name = "{}.avro".format(reverse_candid)
+                s3_searcher.upload_file(avro_io, file_name, args['survey_id'])
+                data["candidate"]["candid"] = str(data["candidate"]["candid"])
+                return jsonify(data)
+            except Exception as e:
+                raise e
 
 
 @api.route("/put_avro")
@@ -208,25 +212,27 @@ class GetAVROResource(Resource):
         except FileNotFoundError:
             app.logger.info(f"AVRO {args['candid']} not found in S3.")
 
-        try:
-            avro_io = mars_searcher.get_file_from_mars(args["oid"], int(args["candid"]))
-            app.logger.info(f"[HIT] AVRO {args['candid']} found in MARS")
-        except Exception as e:
-            app.logger.info("File could not be retreived from MARS.")
-            app.logger.error(f"Error: {e}")
-            raise NotFound("AVRO not found")
-        try:
-            app.logger.info("Uploading Avro from MARS to S3")
-            reverse_candid = utils.reverse_candid(args["candid"])
-            file_name = "{}.avro".format(reverse_candid)
-            avro_io2 = copy.deepcopy(avro_io)  # Next step closes buffer
-            s3_searcher.upload_file(avro_io, file_name, args['survey_id'])
-            file_name = f"{args['candid']}.avro"
-            return send_file(
-                avro_io2,
-                mimetype="app/avro+binary",
-                download_name=file_name,
-                as_attachment=True,
-            )
-        except Exception as e:
-            raise e
+
+        if args['survey_id'] == "ztf":
+            try:
+                avro_io = mars_searcher.get_file_from_mars(args["oid"], int(args["candid"]))
+                app.logger.info(f"[HIT] AVRO {args['candid']} found in MARS")
+            except Exception as e:
+                app.logger.info("File could not be retreived from MARS.")
+                app.logger.error(f"Error: {e}")
+                raise NotFound("AVRO not found")
+            try:
+                app.logger.info("Uploading Avro from MARS to S3")
+                reverse_candid = utils.reverse_candid(args["candid"])
+                file_name = "{}.avro".format(reverse_candid)
+                avro_io2 = copy.deepcopy(avro_io)  # Next step closes buffer
+                s3_searcher.upload_file(avro_io, file_name, args['survey_id'])
+                file_name = f"{args['candid']}.avro"
+                return send_file(
+                    avro_io2,
+                    mimetype="app/avro+binary",
+                    download_name=file_name,
+                    as_attachment=True,
+                )
+            except Exception as e:
+                raise e
