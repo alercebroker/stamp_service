@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - refactor/make_oid_optional
 
 jobs:
   get_tags:
