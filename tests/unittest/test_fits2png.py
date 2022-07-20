@@ -45,6 +45,17 @@ class TestFITS2PNGTransform(unittest.TestCase):
         mock_fio.open.assert_called()
         mock_gzip.open.assert_called()
 
+    @mock.patch('stamp_service.fits2png.fio')
+    @mock.patch('stamp_service.fits2png.gzip')
+    def test_opening_of_not_gzipped_fits(self, mock_gzip, mock_fio, mock_max, mock_plt):
+        mock_max.return_value = 1, 0
+        mock_fio.open.return_value[0].data = self.data
+        mock_gzip.side_effect = IOError()
+
+        fits2png.transform(b'', '', 2)
+        mock_fio.open.assert_called()
+        mock_gzip.open.assert_called()
+
     @mock.patch('stamp_service.fits2png._read_compressed_fits')
     def test_when_using_difference_stamp_do_not_change_min_max(self, mock_read, mock_max, mock_plt):
         mock_read.return_value.data = self.data

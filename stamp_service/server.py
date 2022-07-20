@@ -26,7 +26,7 @@ def create_app(config_path):
     with application.app_context():
         from .search import s3_searcher, mars_searcher
 
-        s3_searcher.init(application.config["SERVER_SETTINGS"]["SURVEY_SETTINGS"]["ztf"]["bucket"])
+        s3_searcher.init(application.config["SERVER_SETTINGS"]["SURVEY_SETTINGS"])
         mars_searcher.init(mars_url=application.config["SERVER_SETTINGS"]["mars_url"])
 
         from .resources import api

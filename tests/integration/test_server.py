@@ -63,9 +63,9 @@ class TestStampResource(VCRTestCase):
         self.upload_file("test_bucket")
         args = {
             "oid": "ZTF18acuwwpp",
-            "candid": 820128985515010010,
+            "candid": "820128985515010010",
             "type": "science",
-            "format": "png",
+            "format": "png"
         }
         rv = self.test_client.get("/get_stamp", query_string=args)
         self.assertEqual(rv.status, "200 OK")
@@ -74,9 +74,9 @@ class TestStampResource(VCRTestCase):
         client = boto3.client("s3")
         args = {
             "oid": "ZTF18acuwwpp",
-            "candid": 820128985515010010,
+            "candid": "820128985515010010",
             "type": "science",
-            "format": "png",
+            "format": "png"
         }
         objs = client.list_objects(Bucket="test_bucket")
         self.assertNotIn("Contents", objs)
@@ -89,7 +89,7 @@ class TestStampResource(VCRTestCase):
     def test_get_avro_not_found(self):
         args = {
             "oid": "ZTF18acuwwpp",
-            "candid": 123,
+            "candid": "123",
             "type": "science",
             "format": "png",
         }
@@ -130,7 +130,7 @@ class TestAvroInfoResource(VCRTestCase):
         self.upload_file("test_bucket")
         args = {
             "oid": "ZTF18acuwwpp",
-            "candid": 820128985515010010,
+            "candid": "820128985515010010",
             "type": "science",
             "format": "png",
         }
@@ -141,7 +141,7 @@ class TestAvroInfoResource(VCRTestCase):
         client = boto3.client("s3")
         args = {
             "oid": "ZTF18acuwwpp",
-            "candid": 820128985515010010,
+            "candid": "820128985515010010",
             "type": "science",
             "format": "png",
         }
@@ -156,7 +156,7 @@ class TestAvroInfoResource(VCRTestCase):
     def test_get_avro_not_found(self):
         args = {
             "oid": "ZTF18acuwwpp",
-            "candid": 123,
+            "candid": "123",
             "type": "science",
             "format": "png",
         }
@@ -188,7 +188,7 @@ class TestPutAvroResource(VCRTestCase):
         self.assertNotIn("Contents", objs)
         rv = self.test_client.post(
             "/put_avro",
-            data={"avro": (io.BytesIO(b"data"), "avro.avro"), "candid": 123, 'surveyid': 'ztf'},
+            data={"avro": (io.BytesIO(b"data"), "avro.avro"), "candid": "123", 'survey_id': 'ztf'},
             follow_redirects=True,
             content_type="multipart/form-data",
         )
@@ -230,7 +230,7 @@ class TestAvroResource(VCRTestCase):
         self.upload_file("test_bucket")
         args = {
             "oid": "ZTF18acuwwpp",
-            "candid": 820128985515010010,
+            "candid": "820128985515010010",
             "type": "science",
             "format": "png",
         }
@@ -242,7 +242,7 @@ class TestAvroResource(VCRTestCase):
         client = boto3.client("s3")
         args = {
             "oid": "ZTF18acuwwpp",
-            "candid": 820128985515010010,
+            "candid": "820128985515010010",
             "type": "science",
             "format": "png",
         }
@@ -257,7 +257,7 @@ class TestAvroResource(VCRTestCase):
     def test_get_avro_not_found(self):
         args = {
             "oid": "ZTF18acuwwpp",
-            "candid": 123,
+            "candid": "123",
             "type": "science",
             "format": "png",
         }

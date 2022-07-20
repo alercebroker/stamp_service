@@ -6,7 +6,7 @@ import os
 
 class TestUtils(unittest.TestCase):
     def test_reverse_candid(self):
-        n = utils.reverse_candid(123456)
+        n = utils.reverse_candid("123456")
         self.assertEqual(n, "654321")
         n = utils.reverse_candid("123456")
         self.assertEqual(n, "654321")
