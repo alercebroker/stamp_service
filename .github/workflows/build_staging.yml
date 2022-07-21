@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - fix/api_stamps_errors
 
 jobs:
   get_tags:
