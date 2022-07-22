@@ -77,7 +77,7 @@ class TestFITS2PNGTransform(unittest.TestCase):
         mock_read.return_value.data = self.data
 
         fits2png.transform(b'', '', 2)
-        mock_plt.axis.assert_called_with('off')
+        mock_plt.figure.return_value.add_subplot.return_value.axis.assert_called_with('off')
 
     @mock.patch('stamp_service.fits2png._read_compressed_fits')
     def test_pyplot_saves_image_as_png_in_bytes_buffer(self, mock_read, mock_max, mock_plt):
@@ -85,7 +85,7 @@ class TestFITS2PNGTransform(unittest.TestCase):
         mock_read.return_value.data = self.data
 
         fits2png.transform(b'', '', 2)
-        args = mock_plt.savefig.call_args
+        args = mock_plt.figure.return_value.savefig.call_args
         self.assertIsInstance(args.args[0], io.BytesIO)
         self.assertEqual('png', args.kwargs['format'])
 
