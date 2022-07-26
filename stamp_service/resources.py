@@ -1,5 +1,5 @@
-from ast import arg
-import copy
+import io
+
 from flask_restx import Resource, reqparse, Api
 from werkzeug.exceptions import NotFound
 from werkzeug.datastructures import FileStorage
@@ -105,6 +105,7 @@ class StampResource(Resource):
 
             # Upload to S3 from MARS
             try:
+                avro_io.seek(0)
                 app.logger.info(
                     f"[HIT] AVRO {args['candid']} found in MARS. Uploading from MARS to S3"
                 )
@@ -144,7 +145,6 @@ class GetAVROInfoResource(Resource):
             return jsonify(data)
         except FileNotFoundError:
             app.logger.info(f"[MISS] AVRO {args['candid']} not found in S3.")
-        
 
         if args['survey_id'] == "ztf":
             try:
@@ -160,6 +160,7 @@ class GetAVROInfoResource(Resource):
                 app.logger.error(f"Error: {e}")
                 raise NotFound("AVRO not found")
             try:
+                avro_io.seek(0)
                 app.logger.info("Uploading Avro from MARS to S3")
                 reverse_candid = utils.reverse_candid(args["candid"])
                 file_name = "{}.avro".format(reverse_candid)
@@ -212,24 +213,24 @@ class GetAVROResource(Resource):
         except FileNotFoundError:
             app.logger.info(f"AVRO {args['candid']} not found in S3.")
 
-
         if args['survey_id'] == "ztf":
             try:
                 avro_io = mars_searcher.get_file_from_mars(args["oid"], int(args["candid"]))
+                output = io.BytesIO(avro_io.read())
                 app.logger.info(f"[HIT] AVRO {args['candid']} found in MARS")
             except Exception as e:
                 app.logger.info("File could not be retreived from MARS.")
                 app.logger.error(f"Error: {e}")
                 raise NotFound("AVRO not found")
             try:
+                avro_io.seek(0)
                 app.logger.info("Uploading Avro from MARS to S3")
                 reverse_candid = utils.reverse_candid(args["candid"])
                 file_name = "{}.avro".format(reverse_candid)
-                avro_io2 = copy.deepcopy(avro_io)  # Next step closes buffer
                 s3_searcher.upload_file(avro_io, file_name, args['survey_id'])
                 file_name = f"{args['candid']}.avro"
                 return send_file(
-                    avro_io2,
+                    output,
                     mimetype="app/avro+binary",
                     download_name=file_name,
                     as_attachment=True,
