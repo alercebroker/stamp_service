@@ -7,7 +7,6 @@ EXAMPLES_PATH = os.path.join(FILE_PATH, "../examples/avro_test")
 CONFIG_FILE_PATH = os.path.join(FILE_PATH, '../test_config.yml')
 os.environ["BUCKET_NAME"] = "test_bucket"
 os.environ["MARS_URL"] = "test_url"
-os.environ["TEST_MODE"] = "True"
 from stamp_service.server import create_app
 import io
 

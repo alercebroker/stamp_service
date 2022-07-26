@@ -34,14 +34,16 @@ def transform(compressed_fits_file, file_type, window):
         data[data > max_val] = max_val
         data[data < min_val] = min_val
 
-    plt.figure()
-    plt.matshow(data, cmap='Greys_r', interpolation="nearest")
-    plt.axis("off")
     buf = io.BytesIO()
-    plt.savefig(buf, format="png", bbox_inches='tight', transparent=True)
+
+    fig = plt.figure()
+    ax = fig.add_subplot()
+    ax.matshow(data, cmap='Greys_r', interpolation="nearest")
+    ax.axis("off")
+    fig.savefig(buf, format="png", bbox_inches='tight', transparent=True)
+    ax.clear()
+    fig.clear()
+    plt.close(fig=fig)
+
     buf.seek(0)
-    im = buf.read()
-    plt.cla()
-    plt.clf()
-    plt.close()
-    return im
+    return buf.read()
