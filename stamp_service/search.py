@@ -1,4 +1,3 @@
-import fastavro
 import requests
 from . import utils
 import io
