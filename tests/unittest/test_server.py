@@ -99,7 +99,7 @@ class TestAVROInfoResource(unittest.TestCase):
         get_file_from_s3,
     ):
         get_file_from_s3.side_effect = FileNotFoundError
-        get_file_from_mars.return_value = b"test"
+        get_file_from_mars.return_value = io.BytesIO(b"test")
         reader.next.return_value = {
             "cutoutScience": {},
             "cutoutTemplate": {},
@@ -182,7 +182,7 @@ class TestAVROResource(unittest.TestCase):
         get_file_from_s3,
     ):
         get_file_from_s3.side_effect = FileNotFoundError
-        get_file_from_mars.return_value = b"test"
+        get_file_from_mars.return_value = io.BytesIO(b"test")
         send_file.return_value = "ok"
         args = {"oid": "oid", "candid": 123, "type": "science", "format": "png"}
         rv = self.client.get("/get_avro", query_string=args)

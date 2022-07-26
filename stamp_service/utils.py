@@ -2,11 +2,13 @@ import io
 import logging
 from . import fits2png
 
+
 def set_logger(app):
     if "gunicorn" in app.config["SERVER_SETTINGS"]["server_software"]:
         gunicorn_logger = logging.getLogger("gunicorn.error")
         app.logger.handlers = gunicorn_logger.handlers
         app.logger.setLevel(gunicorn_logger.level)
+
 
 def format_stamp(stamp, fmt, oid, candid, stype):
     window = 2
