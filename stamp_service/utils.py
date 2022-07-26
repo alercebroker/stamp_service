@@ -10,7 +10,10 @@ def set_logger(app):
 
 def format_stamp(stamp, fmt, oid, candid, stype):
     window = 2
-    basename = f'{oid}_{candid}_{stype}'
+    if oid:
+        basename = f'{oid}_{candid}_{stype}'
+    else:
+        basename = f'{candid}_{stype}'
     if fmt == "fits":
         stamp_file = io.BytesIO(stamp)
         mimetype = "application/fits+gzip"

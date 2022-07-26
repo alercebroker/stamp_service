@@ -63,7 +63,8 @@ class MARSSearcher:
         assert "results" in resp
         assert len(resp["results"]) == 1
         assert "objectId" in resp["results"][0]
-        assert resp["results"][0]["objectId"] == oid
+        if oid:
+            assert resp["results"][0]["objectId"] == oid
         assert "candid" in resp["results"][0]
         assert resp["results"][0]["candid"] == candid
         assert "avro" in resp["results"][0]

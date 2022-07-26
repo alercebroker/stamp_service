@@ -11,7 +11,7 @@ from flask import send_file, jsonify
 import fastavro
 
 stamp_parser = reqparse.RequestParser()
-stamp_parser.add_argument("oid", type=str, help="Object ID", required=True)
+stamp_parser.add_argument("oid", type=str, help="Object ID", default=None)
 stamp_parser.add_argument("candid", type=str, help="Alert id", required=True)
 stamp_parser.add_argument(
     "type",
@@ -36,7 +36,7 @@ stamp_parser.add_argument(
 )
 
 avro_parser = reqparse.RequestParser()
-avro_parser.add_argument("oid", type=str, help="Object ID", required=True)
+avro_parser.add_argument("oid", type=str, help="Object ID", default=None)
 avro_parser.add_argument("candid", type=str, help="Alert id", required=True)
 avro_parser.add_argument(
     "survey_id",
