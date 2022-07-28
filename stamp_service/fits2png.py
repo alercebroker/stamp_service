@@ -1,8 +1,10 @@
+import gzip
+import io
+
 import astropy.io.fits as fio
 import matplotlib.pyplot as plt
-import io
-import gzip
 import numpy as np
+from scipy import ndimage
 
 
 def _read_compressed_fits(compressed_fits_file):
@@ -29,16 +31,22 @@ def transform(compressed_fits_file, file_type, window):
     hdu = _read_compressed_fits(compressed_fits_file)
 
     data = hdu.data
-    if file_type != "difference":
-        max_val, min_val = get_max(data, window)
-        data[data > max_val] = max_val
-        data[data < min_val] = min_val
+    is_diff = file_type != "difference"
+    vmax, vmin = get_max(data, window) if is_diff else (data.max(), data.min())
 
     buf = io.BytesIO()
 
     fig = plt.figure()
     ax = fig.add_subplot()
-    ax.matshow(data, cmap='Greys_r', interpolation="nearest")
+
+    opts = dict(cmap='Greys_r', interpolation="nearest", vmin=vmin, vmax=vmax)
+    try:
+        data = ndimage.rotate(data, hdu.header['PA'])
+        opts['origin'] = 'lower'
+    except KeyError:
+        opts['origin'] = 'upper'
+    ax.imshow(data, **opts)
+
     ax.axis("off")
     fig.savefig(buf, format="png", bbox_inches='tight', transparent=True)
     ax.clear()
