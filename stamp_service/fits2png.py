@@ -31,8 +31,8 @@ def transform(compressed_fits_file, file_type, window):
     hdu = _read_compressed_fits(compressed_fits_file)
 
     data = hdu.data
-    is_diff = file_type != "difference"
-    vmax, vmin = get_max(data, window) if is_diff else (data.max(), data.min())
+    vmax, vmin = (get_max(data, window)
+                  if file_type != "difference" else (data.max(), data.min()))
 
     buf = io.BytesIO()
 
