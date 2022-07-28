@@ -40,10 +40,10 @@ def transform(compressed_fits_file, file_type, window):
     ax = fig.add_subplot()
 
     opts = dict(cmap='Greys_r', interpolation="nearest", vmin=vmin, vmax=vmax)
-    try:
+    try:  # Transformation required to properly orient ATLAS stamps
         data = ndimage.rotate(data, hdu.header['PA'])
         opts['origin'] = 'lower'
-    except KeyError:
+    except KeyError:  # Required for ZTF
         opts['origin'] = 'upper'
     ax.imshow(data, **opts)
 
