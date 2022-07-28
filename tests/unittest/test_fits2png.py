@@ -28,6 +28,7 @@ class TestGetMaxValueRange(unittest.TestCase):
         self.assertEqual(expected, vmin)
 
 
+@mock.patch('stamp_service.fits2png.ndimage')
 @mock.patch('stamp_service.fits2png.plt')
 @mock.patch('stamp_service.fits2png.get_max')
 class TestFITS2PNGTransform(unittest.TestCase):
@@ -37,7 +38,7 @@ class TestFITS2PNGTransform(unittest.TestCase):
 
     @mock.patch('stamp_service.fits2png.fio')
     @mock.patch('stamp_service.fits2png.gzip')
-    def test_opening_of_gzipped_fits(self, mock_gzip, mock_fio, mock_max, mock_plt):
+    def test_opening_of_gzipped_fits(self, mock_gzip, mock_fio, mock_max, mock_plt, mock_ndimage):
         mock_max.return_value = 1, 0
         mock_fio.open.return_value[0].data = self.data
 
@@ -47,7 +48,7 @@ class TestFITS2PNGTransform(unittest.TestCase):
 
     @mock.patch('stamp_service.fits2png.fio')
     @mock.patch('stamp_service.fits2png.gzip')
-    def test_opening_of_not_gzipped_fits(self, mock_gzip, mock_fio, mock_max, mock_plt):
+    def test_opening_of_not_gzipped_fits(self, mock_gzip, mock_fio, mock_max, mock_plt, mock_ndimage):
         mock_max.return_value = 1, 0
         mock_fio.open.return_value[0].data = self.data
         mock_gzip.side_effect = IOError()
@@ -57,14 +58,14 @@ class TestFITS2PNGTransform(unittest.TestCase):
         mock_gzip.open.assert_called()
 
     @mock.patch('stamp_service.fits2png._read_compressed_fits')
-    def test_when_using_difference_stamp_do_not_change_min_max(self, mock_read, mock_max, mock_plt):
+    def test_when_using_difference_stamp_do_not_change_min_max(self, mock_read, mock_max, mock_plt, mock_ndimage):
         mock_read.return_value.data = self.data
 
         fits2png.transform(b'', 'difference', 2)
         mock_max.assert_not_called()
 
     @mock.patch('stamp_service.fits2png._read_compressed_fits')
-    def test_when_using_stamp_not_difference_change_min_max(self, mock_read, mock_max, mock_plt):
+    def test_when_using_stamp_not_difference_change_min_max(self, mock_read, mock_max, mock_plt, mock_ndimage):
         mock_max.return_value = 1, 0
         mock_read.return_value.data = self.data
 
@@ -72,7 +73,7 @@ class TestFITS2PNGTransform(unittest.TestCase):
         mock_max.assert_called()
 
     @mock.patch('stamp_service.fits2png._read_compressed_fits')
-    def test_pyplot_removes_axis_from_figure(self, mock_read, mock_max, mock_plt):
+    def test_pyplot_removes_axis_from_figure(self, mock_read, mock_max, mock_plt, mock_ndimage):
         mock_max.return_value = 1, 0
         mock_read.return_value.data = self.data
 
@@ -80,7 +81,7 @@ class TestFITS2PNGTransform(unittest.TestCase):
         mock_plt.figure.return_value.add_subplot.return_value.axis.assert_called_with('off')
 
     @mock.patch('stamp_service.fits2png._read_compressed_fits')
-    def test_pyplot_saves_image_as_png_in_bytes_buffer(self, mock_read, mock_max, mock_plt):
+    def test_pyplot_saves_image_as_png_in_bytes_buffer(self, mock_read, mock_max, mock_plt, mock_ndimage):
         mock_max.return_value = 1, 0
         mock_read.return_value.data = self.data
 
@@ -90,7 +91,7 @@ class TestFITS2PNGTransform(unittest.TestCase):
         self.assertEqual('png', args.kwargs['format'])
 
     @mock.patch('stamp_service.fits2png._read_compressed_fits')
-    def test_figure_is_closed(self, mock_read, mock_max, mock_plt):
+    def test_figure_is_closed(self, mock_read, mock_max, mock_plt, mock_ndimage):
         mock_max.return_value = 1, 0
         mock_read.return_value.data = self.data
 
@@ -98,9 +99,33 @@ class TestFITS2PNGTransform(unittest.TestCase):
         mock_plt.close.assert_called()
 
     @mock.patch('stamp_service.fits2png._read_compressed_fits')
-    def test_output_is_a_bytes_object(self, mock_read, mock_max, mock_plt):
+    def test_output_is_a_bytes_object(self, mock_read, mock_max, mock_plt, mock_ndimage):
         mock_max.return_value = 1, 0
         mock_read.return_value.data = self.data
 
         out = fits2png.transform(b'', '', 2)
         self.assertEqual(b'', out)
+
+    @mock.patch('stamp_service.fits2png._read_compressed_fits')
+    def test_no_rotation_applied_if_pa_not_in_header(self, mock_read, mock_max, mock_plt, mock_ndimage):
+        mock_max.return_value = 1, 0
+        mock_read.return_value.data = self.data
+        mock_read.return_value.header = dict()
+
+        fits2png.transform(b'', '', 2)
+        mock_ndimage.rotate.assert_not_called()
+        kwargs = mock_plt.figure.return_value.add_subplot.return_value.imshow.call_args.kwargs
+        self.assertIn('origin', kwargs)
+        self.assertEqual(kwargs['origin'], 'upper')
+
+    @mock.patch('stamp_service.fits2png._read_compressed_fits')
+    def test_rotation_applied_if_pa_present_in_header(self, mock_read, mock_max, mock_plt, mock_ndimage):
+        mock_max.return_value = 1, 0
+        mock_read.return_value.data = self.data
+        mock_read.return_value.header = dict(PA=0)
+
+        fits2png.transform(b'', '', 2)
+        mock_ndimage.rotate.assert_called()
+        kwargs = mock_plt.figure.return_value.add_subplot.return_value.imshow.call_args.kwargs
+        self.assertIn('origin', kwargs)
+        self.assertEqual(kwargs['origin'], 'lower')
