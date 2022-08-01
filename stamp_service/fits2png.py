@@ -1,8 +1,10 @@
+import gzip
+import io
+
 import astropy.io.fits as fio
 import matplotlib.pyplot as plt
-import io
-import gzip
 import numpy as np
+from scipy import ndimage
 
 
 def _read_compressed_fits(compressed_fits_file):
@@ -17,8 +19,7 @@ def _read_compressed_fits(compressed_fits_file):
 def get_max(data, window):
     x = data.shape[0] // 2
     y = data.shape[1] // 2
-    center = data[np.arange(x - window, x + window), :]
-    center = center[:, np.arange(y - window, y + window)]
+    center = data[x - window:x + window, y - window:y + window]
     max_val = np.max(center)
     min_val = np.min(data) + 0.2 * np.median(np.abs(data - np.median(data)))
 
@@ -29,16 +30,22 @@ def transform(compressed_fits_file, file_type, window):
     hdu = _read_compressed_fits(compressed_fits_file)
 
     data = hdu.data
-    if file_type != "difference":
-        max_val, min_val = get_max(data, window)
-        data[data > max_val] = max_val
-        data[data < min_val] = min_val
+    vmax, vmin = (get_max(data, window)
+                  if file_type != "difference" else (data.max(), data.min()))
 
     buf = io.BytesIO()
 
     fig = plt.figure()
     ax = fig.add_subplot()
-    ax.matshow(data, cmap='Greys_r', interpolation="nearest")
+
+    opts = dict(cmap='Greys_r', interpolation="nearest", vmin=vmin, vmax=vmax)
+    try:  # Transformation required to properly orient ATLAS stamps
+        data = ndimage.rotate(data, hdu.header['PA'])
+        opts['origin'] = 'lower'
+    except KeyError:  # Required for ZTF
+        opts['origin'] = 'upper'
+    ax.imshow(data, **opts)
+
     ax.axis("off")
     fig.savefig(buf, format="png", bbox_inches='tight', transparent=True)
     ax.clear()
