@@ -10,3 +10,7 @@ SERVER_SETTINGS:
     atlas:
       id: "atlas"
       bucket: "atlas_test_bucket"
+RALIDATOR_SETTINGS:
+  SECRET_KEY: "a_secret_key"
+  ON_AUTH_ERROR_DEFAULT_USER: true
+  DEFAULT_USER_FILTERS: ["NO_FILTER"]

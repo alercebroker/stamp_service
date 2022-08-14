@@ -1,6 +1,8 @@
 from prometheus_flask_exporter.multiprocess import GunicornInternalPrometheusMetrics
 from prometheus_flask_exporter import PrometheusMetrics
+from ralidator_flask.ralidator_flask import RalidatorFlask
 
+ralidator = RalidatorFlask()
 
 def set_prometheus_metrics(app):
     is_gunicorn = "gunicorn" in app.config["SERVER_SETTINGS"]["server_software"]

@@ -2,6 +2,8 @@ FROM python:3.9
 
 RUN apt-get update
 RUN apt-get -y install libsnappy-dev
+RUN apt install -y git
+RUN git config --global url."https://${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/"
 
 WORKDIR /app
 
