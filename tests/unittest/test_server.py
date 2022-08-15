@@ -1,3 +1,4 @@
+from email import header
 import unittest
 from unittest import mock
 import os
@@ -136,6 +137,40 @@ class TestAVROInfoResource(unittest.TestCase):
         rv = self.client.get("/get_avro_info", query_string=args)
         self.assertEqual(rv.json, "ok")
 
+    @mock.patch("stamp_service.search.S3Searcher.get_file_from_s3")
+    @mock.patch("stamp_service.resources.fastavro.reader")
+    @mock.patch("stamp_service.resources.jsonify")
+    def test_get_avro_s3_filter_atlas(self, jsonify, reader, get_file_from_s3):
+        get_file_from_s3.return_value = b"data"
+        reader.next.return_value = {
+            "cutoutScience": {},
+            "cutoutTemplate": {},
+            "cutoutDifference": {},
+        }
+        jsonify.return_value = "ok"
+        args = {"oid": "oid", "candid": 123, "type": "science", "format": "png", "survey_id": "atlas"}
+        token = create_token(["basic_user"], ["filter_atlas_avro"], self.SECRET_KEY)
+        headers = {"AUTH-TOKEN": token}
+        rv = self.client.get("/get_avro_info", query_string=args, headers=headers)
+        self.assertEqual(rv.json, None)
+
+    @mock.patch("stamp_service.search.S3Searcher.get_file_from_s3")
+    @mock.patch("stamp_service.resources.fastavro.reader")
+    @mock.patch("stamp_service.resources.jsonify")
+    def test_get_avro_s3_allow_atlas(self, jsonify, reader, get_file_from_s3):
+        get_file_from_s3.return_value = b"data"
+        reader.next.return_value = {
+            "cutoutScience": {},
+            "cutoutTemplate": {},
+            "cutoutDifference": {},
+        }
+        jsonify.return_value = "ok"
+        args = {"oid": "oid", "candid": 123, "type": "science", "format": "png", "survey_id": "atlas"}
+        token = create_token(["basic_user"], ["no_filter"], self.SECRET_KEY)
+        headers = {"AUTH-TOKEN": token}
+        rv = self.client.get("/get_avro_info", query_string=args, headers=headers)
+        self.assertEqual(rv.json, "ok")
+
     @mock.patch("stamp_service.resources.s3_searcher.get_file_from_s3")
     @mock.patch("stamp_service.resources.s3_searcher.upload_file")
     @mock.patch("stamp_service.resources.mars_searcher.get_file_from_mars")
@@ -238,6 +273,28 @@ class TestAVROResource(unittest.TestCase):
         send_file.return_value = "ok"
         args = {"oid": "oid", "candid": 123, "type": "science", "format": "png"}
         rv = self.client.get("/get_avro", query_string=args)
+        self.assertEqual(rv.json, "ok")
+    
+    @mock.patch("stamp_service.search.S3Searcher.get_file_from_s3")
+    @mock.patch("stamp_service.resources.send_file")
+    def test_get_avro_s3_filter_atlas(self, send_file, get_file_from_s3):
+        get_file_from_s3.return_value = b"data"
+        send_file.return_value = "ok"
+        args = {"oid": "oid", "candid": 123, "type": "science", "format": "png"}
+        token = create_token(["basic_user"], ["filter_atlas_avro"], self.SECRET_KEY)
+        headers = {"AUTH-TOKEN": token}
+        rv = self.client.get("/get_avro", query_string=args, headers=headers)
+        self.assertEqual(rv.json, None)
+
+    @mock.patch("stamp_service.search.S3Searcher.get_file_from_s3")
+    @mock.patch("stamp_service.resources.send_file")
+    def test_get_avro_s3_filter_atlas(self, send_file, get_file_from_s3):
+        get_file_from_s3.return_value = b"data"
+        send_file.return_value = "ok"
+        args = {"oid": "oid", "candid": 123, "type": "science", "format": "png"}
+        token = create_token(["basic_user"], ["no_filter"], self.SECRET_KEY)
+        headers = {"AUTH-TOKEN": token}
+        rv = self.client.get("/get_avro", query_string=args, headers=headers)
         self.assertEqual(rv.json, "ok")
 
     @mock.patch("stamp_service.resources.s3_searcher.get_file_from_s3")
