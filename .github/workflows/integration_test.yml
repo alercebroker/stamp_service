@@ -24,7 +24,7 @@ jobs:
           sudo apt-get -y install libsnappy-dev
           python -m pip install --upgrade pip
           pip install pytest coverage numpy moto[s3] vcrpy-unittest
-        git config --global url."https://${{ secrets.INSTALL_PRIVATE_REPO }}@github.com/".insteadOf "https://github.com/"
+          git config --global url."https://${{ secrets.INSTALL_PRIVATE_REPO }}@github.com/".insteadOf "https://github.com/"
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Test with pytest
         run: |
