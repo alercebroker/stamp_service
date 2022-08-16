@@ -7,7 +7,6 @@ from urllib.request import urlopen
 
 
 class S3Searcher:
-
     def init(self, bucket_config, client=None):
         self.client = client or boto3.client("s3")
         self.buckets_dict = bucket_config
@@ -15,12 +14,10 @@ class S3Searcher:
     def get_file_from_s3(self, candid, survey_id):
         reverse_candid = utils.reverse_candid(candid)
         file_name = f"{reverse_candid}.avro"
-        bucket_name = self.buckets_dict[survey_id]['bucket']
+        bucket_name = self.buckets_dict[survey_id]["bucket"]
         try:
             # self.client.download_fileobj(self.bucket_name, file_name, avro_file)
-            f = self.client.get_object(Bucket=bucket_name, Key=file_name)[
-                "Body"
-            ].read()
+            f = self.client.get_object(Bucket=bucket_name, Key=file_name)["Body"].read()
             avro_file = io.BytesIO(f)
             return avro_file
         except ClientError as e:
@@ -40,7 +37,7 @@ class S3Searcher:
         :param bucket: Bucket to upload to
         :param object_name: S3 object name. If not specified then file_name is used
         """
-        bucket_name = self.buckets_dict[survey_id]['bucket']
+        bucket_name = self.buckets_dict[survey_id]["bucket"]
         return self.client.upload_fileobj(file_name, bucket_name, object_name)
 
 

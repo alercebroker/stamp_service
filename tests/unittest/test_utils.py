@@ -27,7 +27,7 @@ class TestUtils(unittest.TestCase):
     @mock.patch("stamp_service.fits2png.get_max")
     @mock.patch("stamp_service.fits2png.transform")
     def test_format_stamp(self, mock_transform, mock_get_max):
-        mock_get_max.return_value = 1,2
+        mock_get_max.return_value = 1, 2
         mock_transform.return_value = b"image"
         stamp = b"stamp"
         format = "fits"

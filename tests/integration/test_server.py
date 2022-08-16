@@ -3,16 +3,31 @@ from unittest import mock
 from moto import mock_s3
 import os
 import io
+import jwt
+from datetime import datetime, timedelta, timezone
 
 FILE_PATH = os.path.dirname(__file__)
 EXAMPLES_PATH = os.path.join(FILE_PATH, "../examples/avro_test")
-CONFIG_FILE_PATH = os.path.join(FILE_PATH, '../test_config.yml')
+CONFIG_FILE_PATH = os.path.join(FILE_PATH, "../test_config.yml")
 os.environ["AWS_ACCESS_KEY_ID"] = "testing"
 os.environ["AWS_SECRET_ACCESS_KEY"] = "testing"
 os.environ["AWS_SECURITY_TOKEN"] = "testing"
 os.environ["AWS_SESSION_TOKEN"] = "testing"
 from stamp_service.server import create_app
 import boto3
+
+
+def create_token(permisions, filters, secret_key):
+    token = {
+        "access": "access",
+        "exp": datetime.now(tz=timezone.utc) + timedelta(hours=1),
+        "jti": "test_jti",
+        "user_id": 1,
+        "permissions": permisions,
+        "filters": filters,
+    }
+    encripted_token = jwt.encode(token, secret_key, algorithm="HS256")
+    return encripted_token
 
 
 @mock_s3
@@ -65,7 +80,7 @@ class TestStampResource(VCRTestCase):
             "oid": "ZTF18acuwwpp",
             "candid": "820128985515010010",
             "type": "science",
-            "format": "png"
+            "format": "png",
         }
         rv = self.test_client.get("/get_stamp", query_string=args)
         self.assertEqual(rv.status, "200 OK")
@@ -76,7 +91,7 @@ class TestStampResource(VCRTestCase):
             "oid": "ZTF18acuwwpp",
             "candid": "820128985515010010",
             "type": "science",
-            "format": "png"
+            "format": "png",
         }
         objs = client.list_objects(Bucket="test_bucket")
         self.assertNotIn("Contents", objs)
@@ -169,6 +184,8 @@ class TestPutAvroResource(VCRTestCase):
     def setUp(self):
         super().setUp()
         self.application = create_app(CONFIG_FILE_PATH)
+
+        self.SECRET_KEY = self.application.config["RALIDATOR_SETTINGS"]["SECRET_KEY"]
         with self.application.test_client() as client:
             self.application.config["TESTING"] = True
             self.test_client = client
@@ -186,11 +203,18 @@ class TestPutAvroResource(VCRTestCase):
         client = boto3.client("s3")
         objs = client.list_objects(Bucket="test_bucket")
         self.assertNotIn("Contents", objs)
+        token = create_token(["admin"], [], self.SECRET_KEY)
+        headers = {"AUTH-TOKEN": token}
         rv = self.test_client.post(
             "/put_avro",
-            data={"avro": (io.BytesIO(b"data"), "avro.avro"), "candid": "123", 'survey_id': 'ztf'},
+            data={
+                "avro": (io.BytesIO(b"data"), "avro.avro"),
+                "candid": "123",
+                "survey_id": "ztf",
+            },
             follow_redirects=True,
             content_type="multipart/form-data",
+            headers=headers,
         )
         objs = client.list_objects(Bucket="test_bucket")
         self.assertEqual(rv.status, "200 OK")

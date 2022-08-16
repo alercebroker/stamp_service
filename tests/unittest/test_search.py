@@ -4,12 +4,8 @@ from stamp_service.search import S3Searcher, MARSSearcher, boto3, io
 from moto import mock_s3
 import os
 
-TEST_BUCKET_CONFIG = {
-    'ztf': {
-        'id': "ztf",
-        'bucket': "test_bucket"
-    }
-}
+TEST_BUCKET_CONFIG = {"ztf": {"id": "ztf", "bucket": "test_bucket"}}
+
 
 @mock_s3
 class TestS3Searcher(unittest.TestCase):
@@ -45,7 +41,7 @@ class TestS3Searcher(unittest.TestCase):
 
     def test_get_file_from_s3(self):
         candid = "820128985515010010"
-        file = self.searcher.get_file_from_s3(candid, 'ztf')
+        file = self.searcher.get_file_from_s3(candid, "ztf")
         self.assertIsInstance(file, io.BytesIO)
 
     def test_upload_file(self):
@@ -53,7 +49,7 @@ class TestS3Searcher(unittest.TestCase):
         self.assertEqual(
             len(self.client.list_objects(Bucket="test_bucket")["Contents"]), 1
         )
-        self.searcher.upload_file(file, object_name="fake_object", survey_id='ztf')
+        self.searcher.upload_file(file, object_name="fake_object", survey_id="ztf")
         self.assertEqual(
             len(self.client.list_objects(Bucket="test_bucket")["Contents"]), 2
         )

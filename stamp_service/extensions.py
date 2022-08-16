@@ -1,5 +1,8 @@
 from prometheus_flask_exporter.multiprocess import GunicornInternalPrometheusMetrics
 from prometheus_flask_exporter import PrometheusMetrics
+from ralidator_flask.ralidator_flask import RalidatorFlask
+
+ralidator = RalidatorFlask()
 
 
 def set_prometheus_metrics(app):
@@ -8,5 +11,5 @@ def set_prometheus_metrics(app):
         prometheus_metrics = GunicornInternalPrometheusMetrics.for_app_factory()
     else:
         prometheus_metrics = PrometheusMetrics.for_app_factory()
-    
+
     prometheus_metrics.init_app(app)

@@ -10,3 +10,6 @@ SERVER_SETTINGS:
     atlas:
       id: "atlas"
       bucket: ${ATLAS_BUCKET_NAME}
+RALIDATOR_SETTINGS:
+  SECRET_KEY: ${SECRET_KEY}
+  ON_AUTH_ERROR_DEFAULT_USER: true
