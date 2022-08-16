@@ -1,4 +1,5 @@
 FROM python:3.9
+ARG GITHUB_TOKEN
 
 RUN apt-get update
 RUN apt-get -y install libsnappy-dev
