@@ -1,5 +1,6 @@
 from .extensions import ralidator
 
+
 def filter_atlas_data(filter_name, arg_key):
     def wrapper_function(arg_function):
         def decorator_function(*args, **kwargs):
@@ -7,9 +8,14 @@ def filter_atlas_data(filter_name, arg_key):
             The decorator function works because we assume that the
             survey id exists.
             """
-            if filter_name in ralidator.ralidator.user_filters and kwargs[arg_key] == "atlas":
+            if (
+                filter_name in ralidator.ralidator.user_filters
+                and kwargs[arg_key] == "atlas"
+            ):
                 return None
             else:
                 return arg_function(*args, **kwargs)
+
         return decorator_function
+
     return wrapper_function

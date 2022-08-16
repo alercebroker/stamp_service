@@ -7,7 +7,7 @@ from datetime import datetime, timedelta, timezone
 
 FILE_PATH = os.path.dirname(__file__)
 EXAMPLES_PATH = os.path.join(FILE_PATH, "../examples/avro_test")
-CONFIG_FILE_PATH = os.path.join(FILE_PATH, '../test_config.yml')
+CONFIG_FILE_PATH = os.path.join(FILE_PATH, "../test_config.yml")
 os.environ["BUCKET_NAME"] = "test_bucket"
 os.environ["MARS_URL"] = "test_url"
 from stamp_service.server import create_app
@@ -63,7 +63,13 @@ class TestStampResource(unittest.TestCase):
     ):
         format_stamp.return_value = (io.BytesIO, "image/png", "fname")
         send_file.return_value = "ok"
-        args = {"oid": "oid", "candid": 123, "type": "science", "format": "png", "survey_id": "atlas"}
+        args = {
+            "oid": "oid",
+            "candid": 123,
+            "type": "science",
+            "format": "png",
+            "survey_id": "atlas",
+        }
         token = create_token(["basic_user"], ["filter_atlas_stamp"], self.SECRET_KEY)
         headers = {"AUTH-TOKEN": token}
         rv = self.client.get("/get_stamp", query_string=args, headers=headers)
@@ -79,7 +85,13 @@ class TestStampResource(unittest.TestCase):
     ):
         format_stamp.return_value = (io.BytesIO, "image/png", "fname")
         send_file.return_value = "ok"
-        args = {"oid": "oid", "candid": 123, "type": "science", "format": "png", "survey_id": "atlas"}
+        args = {
+            "oid": "oid",
+            "candid": 123,
+            "type": "science",
+            "format": "png",
+            "survey_id": "atlas",
+        }
         token = create_token(["basic_user"], ["no_filter"], self.SECRET_KEY)
         headers = {"AUTH-TOKEN": token}
         rv = self.client.get("/get_stamp", query_string=args, headers=headers)
@@ -148,7 +160,13 @@ class TestAVROInfoResource(unittest.TestCase):
             "cutoutDifference": {},
         }
         jsonify.return_value = "ok"
-        args = {"oid": "oid", "candid": 123, "type": "science", "format": "png", "survey_id": "atlas"}
+        args = {
+            "oid": "oid",
+            "candid": 123,
+            "type": "science",
+            "format": "png",
+            "survey_id": "atlas",
+        }
         token = create_token(["basic_user"], ["filter_atlas_avro"], self.SECRET_KEY)
         headers = {"AUTH-TOKEN": token}
         rv = self.client.get("/get_avro_info", query_string=args, headers=headers)
@@ -165,7 +183,13 @@ class TestAVROInfoResource(unittest.TestCase):
             "cutoutDifference": {},
         }
         jsonify.return_value = "ok"
-        args = {"oid": "oid", "candid": 123, "type": "science", "format": "png", "survey_id": "atlas"}
+        args = {
+            "oid": "oid",
+            "candid": 123,
+            "type": "science",
+            "format": "png",
+            "survey_id": "atlas",
+        }
         token = create_token(["basic_user"], ["no_filter"], self.SECRET_KEY)
         headers = {"AUTH-TOKEN": token}
         rv = self.client.get("/get_avro_info", query_string=args, headers=headers)
@@ -232,7 +256,11 @@ class TestPutAVROResource(unittest.TestCase):
         jsonify.return_value = "ok"
         rv = self.client.post(
             "/put_avro",
-            data={"avro": (io.BytesIO(b"data"), "avro.avro"), "candid": 123, 'survey_id': 'ztf'},
+            data={
+                "avro": (io.BytesIO(b"data"), "avro.avro"),
+                "candid": 123,
+                "survey_id": "ztf",
+            },
             follow_redirects=True,
             content_type="multipart/form-data",
         )
@@ -246,7 +274,11 @@ class TestPutAVROResource(unittest.TestCase):
         headers = {"AUTH-TOKEN": token}
         rv = self.client.post(
             "/put_avro",
-            data={"avro": (io.BytesIO(b"data"), "avro.avro"), "candid": 123, 'survey_id': 'ztf'},
+            data={
+                "avro": (io.BytesIO(b"data"), "avro.avro"),
+                "candid": 123,
+                "survey_id": "ztf",
+            },
             follow_redirects=True,
             content_type="multipart/form-data",
             headers=headers,
@@ -274,7 +306,7 @@ class TestAVROResource(unittest.TestCase):
         args = {"oid": "oid", "candid": 123, "type": "science", "format": "png"}
         rv = self.client.get("/get_avro", query_string=args)
         self.assertEqual(rv.json, "ok")
-    
+
     @mock.patch("stamp_service.search.S3Searcher.get_file_from_s3")
     @mock.patch("stamp_service.resources.send_file")
     def test_get_avro_s3_filter_atlas(self, send_file, get_file_from_s3):

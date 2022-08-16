@@ -19,7 +19,7 @@ def _read_compressed_fits(compressed_fits_file):
 def get_max(data, window):
     x = data.shape[0] // 2
     y = data.shape[1] // 2
-    center = data[x - window:x + window, y - window:y + window]
+    center = data[x - window : x + window, y - window : y + window]
     max_val = np.max(center)
     min_val = np.min(data) + 0.2 * np.median(np.abs(data - np.median(data)))
 
@@ -30,24 +30,25 @@ def transform(compressed_fits_file, file_type, window):
     hdu = _read_compressed_fits(compressed_fits_file)
 
     data = hdu.data
-    vmax, vmin = (get_max(data, window)
-                  if file_type != "difference" else (data.max(), data.min()))
+    vmax, vmin = (
+        get_max(data, window) if file_type != "difference" else (data.max(), data.min())
+    )
 
     buf = io.BytesIO()
 
     fig = plt.figure()
     ax = fig.add_subplot()
 
-    opts = dict(cmap='Greys_r', interpolation="nearest", vmin=vmin, vmax=vmax)
+    opts = dict(cmap="Greys_r", interpolation="nearest", vmin=vmin, vmax=vmax)
     try:  # Transformation required to properly orient ATLAS stamps
-        data = ndimage.rotate(data, hdu.header['PA'])
-        opts['origin'] = 'lower'
+        data = ndimage.rotate(data, hdu.header["PA"])
+        opts["origin"] = "lower"
     except KeyError:  # Required for ZTF
-        opts['origin'] = 'upper'
+        opts["origin"] = "upper"
     ax.imshow(data, **opts)
 
     ax.axis("off")
-    fig.savefig(buf, format="png", bbox_inches='tight', transparent=True)
+    fig.savefig(buf, format="png", bbox_inches="tight", transparent=True)
     ax.clear()
     fig.clear()
     plt.close(fig=fig)

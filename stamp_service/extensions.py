@@ -4,11 +4,12 @@ from ralidator_flask.ralidator_flask import RalidatorFlask
 
 ralidator = RalidatorFlask()
 
+
 def set_prometheus_metrics(app):
     is_gunicorn = "gunicorn" in app.config["SERVER_SETTINGS"]["server_software"]
     if is_gunicorn:
         prometheus_metrics = GunicornInternalPrometheusMetrics.for_app_factory()
     else:
         prometheus_metrics = PrometheusMetrics.for_app_factory()
-    
+
     prometheus_metrics.init_app(app)

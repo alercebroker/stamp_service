@@ -8,7 +8,7 @@ from datetime import datetime, timedelta, timezone
 
 FILE_PATH = os.path.dirname(__file__)
 EXAMPLES_PATH = os.path.join(FILE_PATH, "../examples/avro_test")
-CONFIG_FILE_PATH = os.path.join(FILE_PATH, '../test_config.yml')
+CONFIG_FILE_PATH = os.path.join(FILE_PATH, "../test_config.yml")
 os.environ["AWS_ACCESS_KEY_ID"] = "testing"
 os.environ["AWS_SECRET_ACCESS_KEY"] = "testing"
 os.environ["AWS_SECURITY_TOKEN"] = "testing"
@@ -80,7 +80,7 @@ class TestStampResource(VCRTestCase):
             "oid": "ZTF18acuwwpp",
             "candid": "820128985515010010",
             "type": "science",
-            "format": "png"
+            "format": "png",
         }
         rv = self.test_client.get("/get_stamp", query_string=args)
         self.assertEqual(rv.status, "200 OK")
@@ -91,7 +91,7 @@ class TestStampResource(VCRTestCase):
             "oid": "ZTF18acuwwpp",
             "candid": "820128985515010010",
             "type": "science",
-            "format": "png"
+            "format": "png",
         }
         objs = client.list_objects(Bucket="test_bucket")
         self.assertNotIn("Contents", objs)
@@ -207,10 +207,14 @@ class TestPutAvroResource(VCRTestCase):
         headers = {"AUTH-TOKEN": token}
         rv = self.test_client.post(
             "/put_avro",
-            data={"avro": (io.BytesIO(b"data"), "avro.avro"), "candid": "123", 'survey_id': 'ztf'},
+            data={
+                "avro": (io.BytesIO(b"data"), "avro.avro"),
+                "candid": "123",
+                "survey_id": "ztf",
+            },
             follow_redirects=True,
             content_type="multipart/form-data",
-            headers=headers
+            headers=headers,
         )
         objs = client.list_objects(Bucket="test_bucket")
         self.assertEqual(rv.status, "200 OK")

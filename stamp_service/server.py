@@ -9,8 +9,8 @@ from envyaml import EnvYAML
 def create_app(config_path):
     application = Flask(__name__)
     config_dict = EnvYAML(config_path)
-    application.config["SERVER_SETTINGS"] = config_dict['SERVER_SETTINGS']
-    application.config["RALIDATOR_SETTINGS"] = config_dict['RALIDATOR_SETTINGS']
+    application.config["SERVER_SETTINGS"] = config_dict["SERVER_SETTINGS"]
+    application.config["RALIDATOR_SETTINGS"] = config_dict["RALIDATOR_SETTINGS"]
     application.config["FILTERS_MAP"] = {}
     CORS(application)
 
