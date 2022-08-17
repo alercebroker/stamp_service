@@ -8,8 +8,10 @@ def filter_atlas_data(filter_name, arg_key):
             The decorator function works because we assume that the
             survey id exists.
             """
+            apply_all = "*" in ralidator.ralidator.user_filters
             if (
-                filter_name in ralidator.ralidator.user_filters
+                (apply_all or
+                filter_name in ralidator.ralidator.user_filters)
                 and kwargs[arg_key] == "atlas"
             ):
                 return None
