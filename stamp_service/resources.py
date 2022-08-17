@@ -76,9 +76,9 @@ api = Api(
 @api.response(404, "AVRO not found")
 class StampResource(Resource):
 
+    @api.expect(stamp_parser, validate=True)
     @set_permissions_decorator(["admin", "basic_user"])
     @check_permissions_decorator
-    @api.expect(stamp_parser, validate=True)
     def get(self):
         args = stamp_parser.parse_args()
         candid = args["candid"]
@@ -162,9 +162,9 @@ class StampResource(Resource):
 @api.response(404, "AVRO not found")
 class GetAVROInfoResource(Resource):
 
+    @api.expect(avro_parser)
     @set_permissions_decorator(["admin", "basic_user"])
     @check_permissions_decorator
-    @api.expect(avro_parser)
     def get(self):
         args = avro_parser.parse_args()
         candid = args["candid"]
@@ -225,9 +225,9 @@ class GetAVROInfoResource(Resource):
 @api.response(500, "Server error")
 class PutAVROResource(Resource):
 
+    @api.expect(upload_parser)
     @set_permissions_decorator(["admin"])
     @check_permissions_decorator
-    @api.expect(upload_parser)
     def post(self):
         args = upload_parser.parse_args()
         reverse_candid = utils.reverse_candid(args["candid"])
@@ -250,6 +250,7 @@ class PutAVROResource(Resource):
 @api.response(404, "AVRO not found")
 class GetAVROResource(Resource):
 
+    @api.expect(avro_parser)
     @set_permissions_decorator(["admin", "basic_user"])
     @check_permissions_decorator
     @api.expect(avro_parser)
