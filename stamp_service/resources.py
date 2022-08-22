@@ -102,7 +102,6 @@ class StampResource(Resource):
                 as_attachment=stamp_params["as_attachment"],
             )
 
-    @filter_atlas_data(filter_name="filter_atlas_stamp", arg_key="survey_id")
     def get_stamp(self, candid, survey_id, file_type, format, oid=None):
         # Search in s3
         try:

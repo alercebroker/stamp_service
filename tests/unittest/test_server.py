@@ -58,6 +58,7 @@ class TestStampResource(unittest.TestCase):
     @mock.patch("stamp_service.utils.format_stamp")
     @mock.patch("stamp_service.resources.send_file")
     @mock.patch("stamp_service.resources.fastavro.reader")
+    @unittest.skip("removed filter in stamps")
     def test_get_stamp_s3_filter_atlas(
         self, reader, send_file, format_stamp, get_stamp_type, get_avro_from_s3
     ):
