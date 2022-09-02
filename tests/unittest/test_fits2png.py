@@ -17,6 +17,17 @@ class TestGetMaxValueRange(unittest.TestCase):
         vmax, _ = fits2png.get_max(data, window)
         self.assertEqual(max_in, vmax)
 
+    def test_get_max_only_gets_maximum_inside_for_off_diagonal_edge(self):
+        xsize, ysize = 10, 10
+        data = np.zeros((xsize, ysize))
+        window = 2
+        max_in, max_out = 1, 5  # Higher outside window
+        data[xsize // 2 + 1, ysize // 2 - 1] = max_in
+        data[0, 0] = max_out
+
+        vmax, _ = fits2png.get_max(data, window)
+        self.assertEqual(max_in, vmax)
+
     def test_get_max_gets_minimum_from_full_data(self):
         xsize, ysize = 10, 10
         np.random.seed(616)
