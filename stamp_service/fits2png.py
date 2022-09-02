@@ -20,8 +20,8 @@ def get_max(data, window):
     x = data.shape[0] // 2
     y = data.shape[1] // 2
     center = data[x - window : x + window, y - window : y + window]
-    max_val = np.max(center)
-    min_val = np.min(data) + 0.2 * np.median(np.abs(data - np.median(data)))
+    max_val = np.nanmax(center)
+    min_val = np.nanmin(data) + 0.2 * np.nanmedian(np.abs(data - np.nanmedian(data)))
 
     return max_val, min_val
 
@@ -31,7 +31,7 @@ def transform(compressed_fits_file, file_type, window):
 
     data = hdu.data
     vmax, vmin = (
-        get_max(data, window) if file_type != "difference" else (data.max(), data.min())
+        get_max(data, window) if file_type != "difference" else (np.nanmax(data), np.nanmin(data))
     )
 
     buf = io.BytesIO()
