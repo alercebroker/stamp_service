@@ -75,14 +75,13 @@ api = Api(
 @api.response(200, "Success")
 @api.response(404, "AVRO not found")
 class StampResource(Resource):
-
     @api.expect(stamp_parser, validate=True)
     @set_permissions_decorator(["admin", "basic_user"])
     @check_permissions_decorator
     def get(self):
         args = stamp_parser.parse_args()
         candid = args["candid"]
-        survey_id = args['survey_id']
+        survey_id = args["survey_id"]
         file_type = args["type"]
         format = args["format"]
         oid = args["oid"]
@@ -92,7 +91,7 @@ class StampResource(Resource):
             survey_id=survey_id,
             file_type=file_type,
             format=format,
-            oid=oid
+            oid=oid,
         )
         if stamp_params:
             return send_file(
@@ -120,7 +119,7 @@ class StampResource(Resource):
             }
         except FileNotFoundError:
             app.logger.info(f"[MISS] AVRO {candid} not found in S3.")
-        
+
         if survey_id == "ztf":
             # Search in MARS
             try:
@@ -160,7 +159,6 @@ class StampResource(Resource):
 @api.response(200, "Success")
 @api.response(404, "AVRO not found")
 class GetAVROInfoResource(Resource):
-
     @api.expect(avro_parser)
     @set_permissions_decorator(["admin", "basic_user"])
     @check_permissions_decorator
@@ -170,12 +168,8 @@ class GetAVROInfoResource(Resource):
         survey_id = args["survey_id"]
         oid = args["oid"]
 
-        avro_data = self.get_avro(
-            candid=candid,
-            survey_id=survey_id,
-            oid=oid
-        )
-        
+        avro_data = self.get_avro(candid=candid, survey_id=survey_id, oid=oid)
+
         if avro_data:
             return avro_data
 
@@ -223,7 +217,6 @@ class GetAVROInfoResource(Resource):
 @api.response(200, "Success")
 @api.response(500, "Server error")
 class PutAVROResource(Resource):
-
     @api.expect(upload_parser)
     @set_permissions_decorator(["admin"])
     @check_permissions_decorator
@@ -232,11 +225,15 @@ class PutAVROResource(Resource):
         reverse_candid = utils.reverse_candid(args["candid"])
         file_name = "{}.avro".format(reverse_candid)
         app.logger.info(
-            "Saving on s3://{}/{}".format(s3_searcher.buckets_dict[args['survey_id']]['bucket'], file_name)
+            "Saving on s3://{}/{}".format(
+                s3_searcher.buckets_dict[args["survey_id"]]["bucket"], file_name
+            )
         )
         f = args["avro"]
         try:
-            response = s3_searcher.upload_file(f, object_name=file_name, survey_id=args['survey_id'])
+            response = s3_searcher.upload_file(
+                f, object_name=file_name, survey_id=args["survey_id"]
+            )
             return jsonify(response)
         except Exception as e:
             app.logger.info("Could not upload file to S3")
@@ -248,7 +245,6 @@ class PutAVROResource(Resource):
 @api.response(200, "Success")
 @api.response(404, "AVRO not found")
 class GetAVROResource(Resource):
-
     @api.expect(avro_parser)
     @set_permissions_decorator(["admin", "basic_user"])
     @check_permissions_decorator
@@ -259,11 +255,7 @@ class GetAVROResource(Resource):
         survey_id = args["survey_id"]
         oid = args["oid"]
 
-        avro_params = self.get_avro(
-            candid=candid,
-            survey_id=survey_id,
-            oid=oid
-        )
+        avro_params = self.get_avro(candid=candid, survey_id=survey_id, oid=oid)
         if avro_params:
             return send_file(
                 avro_params["file"],
@@ -271,7 +263,6 @@ class GetAVROResource(Resource):
                 download_name=avro_params["download_name"],
                 as_attachment=avro_params["as_attachment"],
             )
-
 
     @filter_atlas_data(filter_name="filter_atlas_avro", arg_key="survey_id")
     def get_avro(self, candid, survey_id, oid=None):
@@ -306,7 +297,7 @@ class GetAVROResource(Resource):
                 file_name = f"{candid}.avro"
                 return {
                     "file": output,
-                    "mimetype":"app/avro+binary",
+                    "mimetype": "app/avro+binary",
                     "download_name": file_name,
                     "as_attachment": True,
                 }

@@ -10,10 +10,8 @@ def filter_atlas_data(filter_name, arg_key):
             """
             apply_all = "*" in ralidator.ralidator.user_filters
             if (
-                (apply_all or
-                filter_name in ralidator.ralidator.user_filters)
-                and kwargs[arg_key] == "atlas"
-            ):
+                apply_all or filter_name in ralidator.ralidator.user_filters
+            ) and kwargs[arg_key] == "atlas":
                 return None
             else:
                 return arg_function(*args, **kwargs)
