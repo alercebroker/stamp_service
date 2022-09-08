@@ -180,48 +180,6 @@ class TestAvroInfoResource(VCRTestCase):
 
 
 @mock_s3
-class TestPutAvroResource(VCRTestCase):
-    def setUp(self):
-        super().setUp()
-        self.application = create_app(CONFIG_FILE_PATH)
-
-        self.SECRET_KEY = self.application.config["RALIDATOR_SETTINGS"]["SECRET_KEY"]
-        with self.application.test_client() as client:
-            self.application.config["TESTING"] = True
-            self.test_client = client
-            self.conn = boto3.resource("s3")
-            self.conn.create_bucket(Bucket="test_bucket")
-
-    def tearDown(self):
-        super().tearDown()
-        self.conn.Bucket("test_bucket").objects.all().delete()
-        del self.conn
-        del self.test_client
-        del self.application
-
-    def test_post(self):
-        client = boto3.client("s3")
-        objs = client.list_objects(Bucket="test_bucket")
-        self.assertNotIn("Contents", objs)
-        token = create_token(["admin"], [], self.SECRET_KEY)
-        headers = {"AUTH-TOKEN": token}
-        rv = self.test_client.post(
-            "/put_avro",
-            data={
-                "avro": (io.BytesIO(b"data"), "avro.avro"),
-                "candid": "123",
-                "survey_id": "ztf",
-            },
-            follow_redirects=True,
-            content_type="multipart/form-data",
-            headers=headers,
-        )
-        objs = client.list_objects(Bucket="test_bucket")
-        self.assertEqual(rv.status, "200 OK")
-        self.assertEqual(len(objs["Contents"]), 1)
-
-
-@mock_s3
 class TestAvroResource(VCRTestCase):
     def setUp(self):
         super().setUp()

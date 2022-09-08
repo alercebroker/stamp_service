@@ -213,34 +213,6 @@ class GetAVROInfoResource(Resource):
                 raise e
 
 
-@api.route("/put_avro")
-@api.response(200, "Success")
-@api.response(500, "Server error")
-class PutAVROResource(Resource):
-    @api.expect(upload_parser)
-    @set_permissions_decorator(["admin"])
-    @check_permissions_decorator
-    def post(self):
-        args = upload_parser.parse_args()
-        reverse_candid = utils.reverse_candid(args["candid"])
-        file_name = "{}.avro".format(reverse_candid)
-        app.logger.info(
-            "Saving on s3://{}/{}".format(
-                s3_searcher.buckets_dict[args["survey_id"]]["bucket"], file_name
-            )
-        )
-        f = args["avro"]
-        try:
-            response = s3_searcher.upload_file(
-                f, object_name=file_name, survey_id=args["survey_id"]
-            )
-            return jsonify(response)
-        except Exception as e:
-            app.logger.info("Could not upload file to S3")
-            app.logger.error(e)
-            raise e
-
-
 @api.route("/get_avro")
 @api.response(200, "Success")
 @api.response(404, "AVRO not found")

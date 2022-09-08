@@ -239,54 +239,6 @@ class TestAVROInfoResource(unittest.TestCase):
         self.assertEqual(rv.status, "404 NOT FOUND")
 
 
-class TestPutAVROResource(unittest.TestCase):
-    def setUp(self):
-        application = create_app(CONFIG_FILE_PATH)
-        application.config["TESTING"] = True
-
-        self.SECRET_KEY = application.config["RALIDATOR_SETTINGS"]["SECRET_KEY"]
-        with application.test_client() as client:
-            self.client = client
-
-    def tearDown(self):
-        del self.client
-
-    @mock.patch("stamp_service.resources.s3_searcher.upload_file")
-    @mock.patch("stamp_service.resources.jsonify")
-    def test_post_forbidden(self, jsonify, upload_file):
-        jsonify.return_value = "ok"
-        rv = self.client.post(
-            "/put_avro",
-            data={
-                "avro": (io.BytesIO(b"data"), "avro.avro"),
-                "candid": 123,
-                "survey_id": "ztf",
-            },
-            follow_redirects=True,
-            content_type="multipart/form-data",
-        )
-        self.assertEqual(rv.json, "Forbidden")
-
-    @mock.patch("stamp_service.resources.s3_searcher.upload_file")
-    @mock.patch("stamp_service.resources.jsonify")
-    def test_post(self, jsonify, upload_file):
-        jsonify.return_value = "ok"
-        token = create_token(["admin"], [], self.SECRET_KEY)
-        headers = {"AUTH-TOKEN": token}
-        rv = self.client.post(
-            "/put_avro",
-            data={
-                "avro": (io.BytesIO(b"data"), "avro.avro"),
-                "candid": 123,
-                "survey_id": "ztf",
-            },
-            follow_redirects=True,
-            content_type="multipart/form-data",
-            headers=headers,
-        )
-        self.assertEqual(rv.json, "ok")
-
-
 class TestAVROResource(unittest.TestCase):
     def setUp(self):
         application = create_app(CONFIG_FILE_PATH)
