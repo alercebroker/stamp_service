@@ -72,7 +72,7 @@ class TestStampResource(unittest.TestCase):
             "survey_id": "atlas",
         }
         token = create_token(["basic_user"], ["filter_atlas_stamp"], self.SECRET_KEY)
-        headers = {"AUTH-TOKEN": token}
+        headers = {"Authorization": f"bearer {token}"}
         rv = self.client.get("/get_stamp", query_string=args, headers=headers)
         self.assertEqual(rv.json, None)
 
@@ -94,7 +94,7 @@ class TestStampResource(unittest.TestCase):
             "survey_id": "atlas",
         }
         token = create_token(["basic_user"], ["no_filter"], self.SECRET_KEY)
-        headers = {"AUTH-TOKEN": token}
+        headers = {"Authorization": f"bearer {token}"}
         rv = self.client.get("/get_stamp", query_string=args, headers=headers)
         self.assertEqual(rv.json, "ok")
 
@@ -169,7 +169,7 @@ class TestAVROInfoResource(unittest.TestCase):
             "survey_id": "atlas",
         }
         token = create_token(["basic_user"], ["filter_atlas_avro"], self.SECRET_KEY)
-        headers = {"AUTH-TOKEN": token}
+        headers = {"Authorization": f"bearer {token}"}
         rv = self.client.get("/get_avro_info", query_string=args, headers=headers)
         self.assertEqual(rv.json, None)
 
@@ -192,7 +192,7 @@ class TestAVROInfoResource(unittest.TestCase):
             "survey_id": "atlas",
         }
         token = create_token(["basic_user"], ["no_filter"], self.SECRET_KEY)
-        headers = {"AUTH-TOKEN": token}
+        headers = {"Authorization": f"bearer {token}"}
         rv = self.client.get("/get_avro_info", query_string=args, headers=headers)
         self.assertEqual(rv.json, "ok")
 
@@ -267,7 +267,7 @@ class TestAVROResource(unittest.TestCase):
         send_file.return_value = "ok"
         args = {"oid": "oid", "candid": 123, "type": "science", "format": "png"}
         token = create_token(["basic_user"], ["filter_atlas_avro"], self.SECRET_KEY)
-        headers = {"AUTH-TOKEN": token}
+        headers = {"Authorization": f"bearer {token}"}
         rv = self.client.get("/get_avro", query_string=args, headers=headers)
         self.assertEqual(rv.json, None)
 
@@ -278,7 +278,7 @@ class TestAVROResource(unittest.TestCase):
         send_file.return_value = "ok"
         args = {"oid": "oid", "candid": 123, "type": "science", "format": "png"}
         token = create_token(["basic_user"], ["no_filter"], self.SECRET_KEY)
-        headers = {"AUTH-TOKEN": token}
+        headers = {"Authorization": f"bearer {token}"}
         rv = self.client.get("/get_avro", query_string=args, headers=headers)
         self.assertEqual(rv.json, "ok")
 
