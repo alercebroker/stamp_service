@@ -13,4 +13,4 @@ flask-restx==0.5.1
 python-snappy==0.6.1
 prometheus-flask-exporter>=0.18.1
 envyaml==1.10.211231
--e git+https://github.com/alercebroker/ralidator-flask.git@50825f9#egg=ralidator_flask
+-e git+https://github.com/alercebroker/ralidator-flask.git@82fa2c9#egg=ralidator_flask
