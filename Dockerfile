@@ -1,4 +1,4 @@
-FROM python:3.9
+FROM python:3.10
 ARG GITHUB_TOKEN
 
 RUN apt-get update
