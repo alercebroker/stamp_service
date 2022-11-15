@@ -1,4 +1,5 @@
 from flask import Flask
+from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_cors import CORS
 from .callbacks import after_request, before_request
 from .utils import set_logger
@@ -8,6 +9,7 @@ from envyaml import EnvYAML
 
 def create_app(config_path):
     application = Flask(__name__)
+    application.wsgi_app = ProxyFix(application.wsgi_app, x_host=1, x_prefix=1)
     config_dict = EnvYAML(config_path)
     application.config["SERVER_SETTINGS"] = config_dict["SERVER_SETTINGS"]
     application.config["RALIDATOR_SETTINGS"] = config_dict["RALIDATOR_SETTINGS"]
