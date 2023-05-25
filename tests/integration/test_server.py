@@ -5,6 +5,7 @@ import os
 import io
 import jwt
 from datetime import datetime, timedelta, timezone
+from fastapi.testclient import TestClient
 
 FILE_PATH = os.path.dirname(__file__)
 EXAMPLES_PATH = os.path.join(FILE_PATH, "../examples/avro_test")
@@ -35,11 +36,9 @@ class TestStampResource(VCRTestCase):
     def setUp(self):
         super().setUp()
         self.application = create_app(CONFIG_FILE_PATH)
-        with self.application.test_client() as client:
-            self.application.config["TESTING"] = True
-            self.test_client = client
-            self.conn = boto3.resource("s3")
-            self.conn.create_bucket(Bucket="test_bucket")
+        self.test_client = TestClient(self.application)
+        self.conn = boto3.resource("s3")
+        self.conn.create_bucket(Bucket="test_bucket")
 
     def tearDown(self):
         super().tearDown()
@@ -59,46 +58,31 @@ class TestStampResource(VCRTestCase):
             client = boto3.client("s3")
             client.upload_fileobj(avro, bucket, object_name_reversed)
 
-    @mock.patch("stamp_service.server.before_request")
-    @mock.patch(
-        "stamp_service.server.after_request",
-        side_effect=lambda response, logger: response,
-    )
-    def test_callbacks(self, after_request, before_request):
-        rv = self.test_client.get("/")
-        self.assertEqual(rv.status, "200 OK")
-        before_request.assert_called()
-        after_request.assert_called()
-        rv = self.test_client.get("error")
-        self.assertNotEqual(rv.status, "200 OK")
-        before_request.assert_called()
-        after_request.assert_called()
-
     def test_get_stamp_s3(self):
         self.upload_file("test_bucket")
         args = {
-            "oid": "ZTF18acuwwpp",
             "candid": "820128985515010010",
             "type": "science",
             "format": "png",
+            "survey_id": "ztf",
         }
-        rv = self.test_client.get("/get_stamp", query_string=args)
-        self.assertEqual(rv.status, "200 OK")
+        rv = self.test_client.get("/get_stamp", params=args)
+        self.assertEqual(rv.status_code, 200)
 
     def test_get_stamp_mars(self):
         client = boto3.client("s3")
         args = {
-            "oid": "ZTF18acuwwpp",
             "candid": "820128985515010010",
             "type": "science",
             "format": "png",
+            "survey_id": "ztf",
         }
         objs = client.list_objects(Bucket="test_bucket")
         self.assertNotIn("Contents", objs)
-        rv = self.test_client.get("/get_stamp", query_string=args)
+        rv = self.test_client.get("/get_stamp", params=args)
         objs = client.list_objects(Bucket="test_bucket")
         self.assertEqual(len(objs["Contents"]), 1)
-        self.assertEqual(rv.status, "200 OK")
+        self.assertEqual(rv.status_code, 200)
         self.assertEqual(len(self.cassette), 3)
 
     def test_get_avro_not_found(self):

@@ -1,4 +1,4 @@
-from .extensions import ralidator
+from ralidator_fastapi.get_ralidator import get_ralidator
 
 
 def filter_atlas_data(filter_name, arg_key):
@@ -8,10 +8,11 @@ def filter_atlas_data(filter_name, arg_key):
             The decorator function works because we assume that the
             survey id exists.
             """
-            apply_all = "*" in ralidator.ralidator.user_filters
-            if (
-                apply_all or filter_name in ralidator.ralidator.user_filters
-            ) and kwargs[arg_key] == "atlas":
+            ralidator = get_ralidator(kwargs["request"])
+            apply_all = "*" in ralidator.user_filters
+            if (apply_all or filter_name in ralidator.user_filters) and kwargs[
+                arg_key
+            ] == "atlas":
                 return None
             else:
                 return arg_function(*args, **kwargs)

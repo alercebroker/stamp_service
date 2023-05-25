@@ -1,7 +1,5 @@
 ---
-test_mode: true
 SERVER_SETTINGS:
-  server_software: ""
   mars_url: "https://mars.lco.global/"
   SURVEY_SETTINGS:
     ztf:

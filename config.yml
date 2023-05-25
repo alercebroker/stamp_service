@@ -1,7 +1,6 @@
 ---
 test_mode: false
 SERVER_SETTINGS:
-  server_software: ${SERVER_SOFTWARE}
   mars_url: ${MARS_URL}
   SURVEY_SETTINGS:
     ztf:

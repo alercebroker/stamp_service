@@ -27,7 +27,6 @@ class S3Searcher:
             ):
                 raise FileNotFoundError
             else:
-                print()
                 raise Exception(e)
 
     def upload_file(self, file_name, object_name, survey_id):
@@ -64,7 +63,3 @@ class MARSSearcher:
         assert "candid" in resp["results"][0]
         assert resp["results"][0]["candid"] == candid
         assert "avro" in resp["results"][0]
-
-
-s3_searcher = S3Searcher()
-mars_searcher = MARSSearcher()
